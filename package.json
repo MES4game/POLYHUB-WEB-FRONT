@@ -1,0 +1,53 @@
+{
+    "name": "et4-project-web-front",
+    "version": "1.0.0",
+    "description": "Front-end of project \"PolyHUB\" for ET4 web project",
+    "private": true,
+    "main": "webpack.config.js",
+    "type": "commonjs",
+    "scripts": {
+        "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}' --max-warnings=0",
+        "predev": "npm run lint",
+        "dev": "NODE_ENV='development' webpack serve",
+        "prebuild": "npm run lint",
+        "build": "NODE_ENV='production' webpack build"
+    },
+    "keywords": [
+        "react",
+        "typescript",
+        "react-router",
+        "eslint"
+    ],
+    "author": "Maxime DAUPHIN, Maël HOUPLINE, Julien TAP",
+    "license": "MIT",
+    "dependencies": {
+        "@fortawesome/free-brands-svg-icons": "7.0.0",
+        "@fortawesome/free-regular-svg-icons": "7.0.0",
+        "@fortawesome/free-solid-svg-icons": "7.0.0",
+        "@fortawesome/react-fontawesome": "3.0.1",
+        "react": "19.1.1",
+        "react-dom": "19.1.1",
+        "react-router-dom": "7.8.2"
+    },
+    "devDependencies": {
+        "@eslint/js": "9.34.0",
+        "@pmmmwh/react-refresh-webpack-plugin": "0.6.1",
+        "@types/node": "24.3.0",
+        "@types/react": "19.1.12",
+        "@types/react-dom": "19.1.9",
+        "css-loader": "7.1.2",
+        "eslint": "9.34.0",
+        "eslint-plugin-react": "7.37.5",
+        "html-webpack-plugin": "5.6.4",
+        "mini-css-extract-plugin": "2.9.4",
+        "node": "22.19.0",
+        "react-refresh": "0.17.0",
+        "style-loader": "4.0.0",
+        "ts-loader": "9.5.4",
+        "typescript": "5.9.2",
+        "typescript-eslint": "8.41.0",
+        "webpack": "5.101.3",
+        "webpack-cli": "6.0.1",
+        "webpack-dev-server": "5.2.2"
+    }
+}
