@@ -4,6 +4,7 @@ import LoadingComp from "@/ui/components/common/loading.component";
 import NavbarComp from "@/ui/components/navbar/navbar.component";
 import InfobarComp from "@/ui/components/infobar/infobar.component";
 import "@/app.css";
+import "@/tailwind.css";
 
 const HomePage     = lazy(() => { return import("@/ui/pages/home/home.page"); });
 const NotFoundPage = lazy(() => { return import("@/ui/pages/not_found.page"); });

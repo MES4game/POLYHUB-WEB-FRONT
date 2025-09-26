@@ -23,7 +23,8 @@
         "noUnusedParameters": true,
         "outDir": "build",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "#/*": ["shadcn/*"]
         },
         "resolveJsonModule": true,
         "rootDir": "src",
