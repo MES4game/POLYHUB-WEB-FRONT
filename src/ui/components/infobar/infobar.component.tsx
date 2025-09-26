@@ -11,10 +11,10 @@ const InfobarComp: FC = (): ReactNode => {
     });
 
     return (
-        <footer id='infobar'>
+        <footer id="infobar">
             <p>&copy; 2025 Maxime DAUPHIN, Maël HOUPLINE, Julien TAP</p>
         </footer>
     );
-}
+};
 
 export default InfobarComp;

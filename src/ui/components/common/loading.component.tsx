@@ -17,6 +17,6 @@ const LoadingComp: FC = (): ReactNode => {
             <FontAwesomeIcon icon={faRotate} spin />
         </div>
     );
-}
+};
 
 export default LoadingComp;

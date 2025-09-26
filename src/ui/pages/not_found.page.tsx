@@ -10,8 +10,8 @@ const NotFoundPage: FC = (): ReactNode => {
     });
 
     return (
-        <h1 style={{ textAlign: 'center' }}>Page not found :(</h1>
+        <h1 style={{ textAlign: "center" }}>Page not found :(</h1>
     );
-}
+};
 
 export default NotFoundPage;
