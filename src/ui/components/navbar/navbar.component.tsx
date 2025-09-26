@@ -11,10 +11,10 @@ const NavbarComp: FC = (): ReactNode => {
     });
 
     return (
-        <header id='navbar'>
+        <header id="navbar">
             <p>PolyHUB</p>
         </header>
     );
-}
+};
 
 export default NavbarComp;

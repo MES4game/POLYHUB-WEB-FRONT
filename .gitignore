@@ -8,6 +8,7 @@
 !eslint.config.mjs
 !webpack.config.js
 !.env
+!.env.template
 !public/
 !public/**
 !src/

@@ -1,25 +1,12 @@
-import { useRef } from "react";
+import { useCallback, useState } from "react";
 import { SmartRef } from "@/shared/models/common/hook.model";
 
-export function useSmartRef<T>(init_value: T): SmartRef<T> {
-    const ref = useRef<T>(init_value);
-    const listeners = useRef<Set<(old?: T, current?: T) => void>>(new Set());
+export function useSmartRef<T>(value: T): SmartRef<T> {
+    return new SmartRef(value);
+}
 
-    function get (): T {
-        return ref.current;
-    };
+export function useReRender(): (..._args: unknown[]) => void {
+    const [, reRender] = useState(0);
 
-    function set (value: T): void {
-        if (ref.current !== value) {
-            ref.current = value;
-            listeners.current.forEach((callback: (old?: T, current?: T) => void) => { callback() });
-        }
-    };
-
-    function subscribe (callback: (old?: T, current?: T) => void): () => void {
-        listeners.current.add(callback);
-        return () => { listeners.current.delete(callback) };
-    };
-
-    return { get, set, subscribe };
+    return useCallback((..._args: unknown[]) => { reRender((prev) => { return (prev + 1) & (1024 - 1); }); }, []);
 }

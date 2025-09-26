@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
+        "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "baseUrl": "./",
+        "checkJs": true,
         "esModuleInterop": true,
         "exactOptionalPropertyTypes": true,
         "forceConsistentCasingInFileNames": true,
@@ -19,10 +21,12 @@
         "noUncheckedIndexedAccess": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "outDir": "build",
         "paths": {
             "@/*": ["src/*"]
         },
         "resolveJsonModule": true,
+        "rootDir": "src",
         "skipLibCheck": true,
         "strict": true,
         "strictNullChecks": true,

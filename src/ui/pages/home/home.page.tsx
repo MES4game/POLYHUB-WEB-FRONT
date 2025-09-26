@@ -13,6 +13,6 @@ const HomePage: FC = (): ReactNode => {
     return (
         <p>PolyHUB: TODO</p>
     );
-}
+};
 
 export default HomePage;
