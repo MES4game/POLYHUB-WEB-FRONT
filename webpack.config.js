@@ -20,7 +20,8 @@ module.exports = {
     resolve: {
         extensions: [".tsx", ".ts", ".jsx", ".js"],
         alias: {
-            "@": path.resolve(__dirname, "src")
+            "@": path.resolve(__dirname, "src"),
+            "#": path.resolve(__dirname, "shadcn")
         }
     },
     module: {

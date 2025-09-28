@@ -27,7 +27,7 @@
             "#/*": ["shadcn/*"]
         },
         "resolveJsonModule": true,
-        "rootDir": "src",
+        "rootDir": "./",
         "skipLibCheck": true,
         "strict": true,
         "strictNullChecks": true,
@@ -35,7 +35,8 @@
         "types": ["node"]
     },
     "include": [
-        "src"
+        "src",
+        "shadcn"
     ],
     "exclude": [
         "node_modules",
