@@ -1,5 +1,6 @@
 import { FC, ReactNode, useEffect } from "react";
-import "@/ui/components/sidebar/sidebar.component.css"
+import "@/ui/components/sidebar/sidebar.component.css";
+import { DayPicker } from "react-day-picker";
 
 const SidebarComp : FC = () : ReactNode => {
     useEffect(() => {
@@ -12,9 +13,9 @@ const SidebarComp : FC = () : ReactNode => {
 
     return (
         <>
-            <p>Sidebar</p>
+            <DayPicker />
         </>
-    )
-}
+    );
+};
 
 export default SidebarComp;
