@@ -17,16 +17,12 @@ const App: FC = (): ReactNode => {
     });
 
     return (
-        <>
-            <main id="main">
-                <Suspense fallback={<LoadingComp />}>
-                    <Routes>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="*" element={<HomePage />} />
-                    </Routes>
-                </Suspense>
-            </main>
-        </>
+        <Suspense fallback={<LoadingComp />}>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="*" element={<HomePage />} />
+            </Routes>
+        </Suspense>
     );
 };
 
