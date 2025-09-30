@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect } from "react";
-import "@/ui/components/navbar/navbar.component.css";
+import "@/ui/components/home/navbar/navbar.component.css";
 
 const NavbarComp: FC = (): ReactNode => {
     useEffect(() => {

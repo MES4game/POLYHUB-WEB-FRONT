@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect } from "react";
-import "@/ui/components/sidebar/sidebar.component.css"
+import "@/ui/components/home/sidebar/sidebar.component.css";
 
 const SidebarComp : FC = () : ReactNode => {
     useEffect(() => {
@@ -11,10 +11,10 @@ const SidebarComp : FC = () : ReactNode => {
     });
 
     return (
-        <>
+        <div id="sidebar">
             <p>Sidebar</p>
-        </>
-    )
-}
+        </div>
+    );
+};
 
 export default SidebarComp;
