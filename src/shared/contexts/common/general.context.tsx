@@ -6,9 +6,7 @@ import { getSelf } from "@/api/user.api";
 
 interface GeneralVarsType {
     token       : SmartRef<string>;
-    lang        : SmartRef<string>;
     user        : SmartRef<User>;
-    navbar_title: SmartRef<string>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -20,9 +18,7 @@ export interface GeneralVarsProviderProps {
 export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: GeneralVarsProviderProps): ReactNode => {
     const context_value: GeneralVarsType = {
         token       : useSmartRef(""),
-        lang        : useSmartRef("en"),
         user        : useSmartRef(mapUser({})),
-        navbar_title: useSmartRef("BDE - PoPS"),
     };
 
     useEffect(() => {
@@ -31,7 +27,6 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         const unsubscribers: (() => void)[] = [];
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => { sessionStorage.setItem("token", curr); }));
-        unsubscribers.push(context_value.lang.subscribe((_, curr) => { localStorage.setItem("lang", curr); }));
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelf(curr)
@@ -40,7 +35,6 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         }, true));
 
         context_value.token.current = sessionStorage.getItem("token") ?? "";
-        context_value.lang.current = localStorage.getItem("lang") ?? "en";
 
         return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
