@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect } from "react";
-import "@/ui/components/calendar/calendar.component.css";
+import "@/ui/components/home/calendar/calendar.component.css";
 
 const CalendarComp: FC = (): ReactNode => {
     useEffect(() => {
@@ -11,7 +11,7 @@ const CalendarComp: FC = (): ReactNode => {
     });
 
     return (
-        <div className="calendarComp">
+        <div id="calendar">
             <p>Calendrier</p>
         </div>
     );
