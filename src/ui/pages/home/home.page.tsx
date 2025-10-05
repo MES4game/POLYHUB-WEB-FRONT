@@ -1,7 +1,8 @@
 import { FC, ReactNode, useEffect } from "react";
 import "@/ui/pages/home/home.page.css";
-import { Calendar } from "#/components/ui/calendar";
-import React from "react";
+import NavbarComp from "@/ui/components/home/navbar/navbar.component";
+import CalendarComp from "@/ui/components/home/calendar/calendar.component";
+import SidebarComp from "@/ui/components/home/sidebar/sidebar.component";
 
 
 const HomePage: FC = (): ReactNode => {
@@ -13,15 +14,12 @@ const HomePage: FC = (): ReactNode => {
         console.log("Rendered: HomePage");
     });
 
-    const [date, setDate] = React.useState<Date | undefined>(new Date());
-
     return (
-        <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            className="rounded-lg border"
-        />
+        <div id="home-page">
+            <NavbarComp />
+            <SidebarComp />
+            <CalendarComp />
+        </div>
     );
 };
 
