@@ -55,7 +55,7 @@ Next steps define how to download the project and run it under a port/path, you 
     2. you can find an example of `docker-compose.yml` in the [`docker config`](./.docker/front) folder
         - you can copy it with `curl -o docker-compose.yml https://raw.githubusercontent.com/MES4game/POLYHUB-WEB-FRONT/main/.docker/front/docker-compose.yml`
     3. you also need to copy [`example.env`](./.docker/front/example.env) to `.env`
-      * you can get it with `curl -o .env https://raw.githubusercontent.com/MES4game/POLYHUB-WEB-FRONT/main/.docker/front/example.env`
+        - you can get it with `curl -o .env https://raw.githubusercontent.com/MES4game/POLYHUB-WEB-FRONT/main/.docker/front/example.env`
     4. edit `.env` to your needs
     5. run `docker-compose up -d --force-recreate --pull always` to start the container
 
