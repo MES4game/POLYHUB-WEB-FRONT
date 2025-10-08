@@ -39,7 +39,13 @@
         "shadcn"
     ],
     "exclude": [
+        ".docker",
+        ".github",
+        ".webpackcache",
+        "assets",
+        "build",
         "node_modules",
-        "build"
+        "public",
+        "scripts"
     ]
 }
