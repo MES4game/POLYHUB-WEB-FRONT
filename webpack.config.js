@@ -1,23 +1,27 @@
 const path = require("path");
+const dotenv = require("dotenv");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV !== "development";
+
+dotenv.config();
 
 module.exports = {
-    entry: "./src/index.tsx",
+    entry: path.resolve(__dirname, "src", "index.tsx"),
     output: {
         filename: "bundle.[contenthash].js",
-        path: path.resolve(__dirname, "build"),
+        path: process.env.BUILD_PATH ?? path.resolve(__dirname, "build"),
         clean: true,
         publicPath: "/"
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js", ".jsx", ".css"],
+        extensions: [".tsx", ".ts", ".jsx", ".js"],
         alias: {
-            "@": path.resolve(__dirname, "src")
+            "@": path.resolve(__dirname, "src"),
+            "#": path.resolve(__dirname, "shadcn")
         }
     },
     module: {
@@ -28,7 +32,7 @@ module.exports = {
                 use: {
                     loader: "ts-loader",
                     options: {
-                        transpileOnly: true,
+                        transpileOnly: true
                     }
                 }
             },
@@ -36,28 +40,32 @@ module.exports = {
                 test: /\.css$/i,
                 use: [
                     isProd ? MiniCssExtractPlugin.loader : "style-loader",
-                    "css-loader"
+                    "css-loader",
+                    "postcss-loader",
                 ]
             }
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./public/index.html",
+            template: path.resolve(__dirname, "public", "index.html"),
             inject: "body",
-            scriptLoading: "defer",
+            scriptLoading: "defer"
         }),
         new webpack.DefinePlugin({
-            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-            "process.env.DOMAIN": JSON.stringify(process.env.DOMAIN)
+            "process.env": JSON.stringify(process.env)
         }),
-        ...(isProd ? [
-                  new MiniCssExtractPlugin({
-                      filename: "css/[name].[contenthash].css",
-                      chunkFilename: "css/[id].[contenthash].css",
-                      ignoreOrder: false
-                  })
-                ] : [new ReactRefreshWebpackPlugin()])
+        ...(
+            isProd
+            ? [
+                new MiniCssExtractPlugin({
+                    filename: "css/[name].[contenthash].css",
+                    chunkFilename: "css/[id].[contenthash].css",
+                    ignoreOrder: false
+                })
+            ]
+            : [new ReactRefreshWebpackPlugin()]
+        )
     ],
     devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
     devServer: {
@@ -68,7 +76,7 @@ module.exports = {
         historyApiFallback: true,
         hot: true,
         host: "127.0.0.1",
-        port: process.env.PORT_DEV ?? 3000,
+        port: process.env.PORT_DEV ?? 3200,
         allowedHosts: [`dev.${process.env.DOMAIN}`],
         compress: true,
         headers: {

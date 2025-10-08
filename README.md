@@ -16,6 +16,7 @@ Front-end repository of project "PolyHUB" for ET4 web project.
 
 ## Customization
 
+Copy `.env.template` to `.env` and modify environment variables as needed.
 Modify files in `src` folder to customize the application (except `index.tsx`).
 
 To edit outisde of src for customization:
@@ -25,5 +26,6 @@ To edit outisde of src for customization:
 
 ## Commands
 - `npm run lint` : lint the code with ESLint (automatically run before `dev` and `build`)
+- `npm run nibble`: lint the code with ESLint and format output to more readable format
 - `npm run dev` : run the application in development mode (with hot-reloading)
 - `npm run build` : build the application for production
