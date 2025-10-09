@@ -10,6 +10,10 @@
 
 !webpack.config.mjs
 !postcss.config.mjs
+!tailwind.config.mjs
+!components.json
+!shadcn/
+!shadcn/**
 !public/
 !public/**
 !src/
