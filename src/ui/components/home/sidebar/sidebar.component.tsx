@@ -1,6 +1,8 @@
 import { FC, ReactNode, useEffect } from "react";
 import "@/ui/components/home/sidebar/sidebar.component.css";
 
+import { DaySelectorComp } from "./daySelector/daySelector.component";
+
 const SidebarComp : FC = () : ReactNode => {
     useEffect(() => {
         console.log("Loaded: NavbarComp");
@@ -12,7 +14,7 @@ const SidebarComp : FC = () : ReactNode => {
 
     return (
         <div id="sidebar">
-            <p>Sidebar</p>
+            <DaySelectorComp />
         </div>
     );
 };

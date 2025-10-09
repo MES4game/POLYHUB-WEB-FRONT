@@ -4,14 +4,14 @@ import * as React from "react";
 
 import { Calendar } from "#/components/ui/calendar";
 
-import "@/ui/components/sidebar/dayPicker/dayPicker.component.css";
+import "@/ui/components/home/sidebar/daySelector/daySelector.component.css";
 
-export const CalendarDemoComp = () => {
+export const DaySelectorComp = () => {
     const [date, setDate] = React.useState<Date | undefined>(new Date());
 
     return (
         <Calendar
-            id="calendar"
+            id="daySelector"
             mode="single"
             selected={date}
             onSelect={setDate}

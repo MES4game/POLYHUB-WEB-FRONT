@@ -1,6 +1,7 @@
 import { FC, ReactNode, useEffect } from "react";
 import "@/ui/components/home/navbar/navbar.component.css";
 import { Link } from "react-router-dom";
+import { Avatar, AvatarImage } from "#/components/ui/avatar";
 
 const NavbarComp: FC = (): ReactNode => {
     useEffect(() => {
@@ -14,7 +15,12 @@ const NavbarComp: FC = (): ReactNode => {
     return (
         <header id="navbar">
             <p>PolyHUB</p>
-            <Link to="/login"><img src="/images/loginImage.png" style={{width:"30px"}} /></Link>
+            
+            <Link to="/login">
+                <Avatar>
+                    <AvatarImage src="/images/loginImage.png" />
+                </Avatar>
+            </Link>
         </header>
     );
 };
