@@ -24,9 +24,17 @@ function render(App: FC) {
 
 render((await import("@/app")).default);
 
-// @ts-expect-error normally no problem
+// @ts-expect-error normally no runtime/compile problem
 if (import.meta.webpackHot) {
     console.log("webpackHot enabled");
-    // @ts-expect-error we do a check before so no problem
-    import.meta.webpackHot.accept("@/app", () => { void (async () => { render((await import("@/app")).default); })(); });  // eslint-disable-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
+    // @ts-expect-error it is executed only if the detected error is not an error
+    import.meta.webpackHot.accept(  // eslint-disable-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        "@/app",
+        () => {
+            void import("@/app")
+                .then((value) => { return value.default; })
+                .then(render);
+        },
+    );
 }

@@ -1,5 +1,7 @@
-module.exports = {
-    content: ['./dist/*.html'],
+export default {
+    content: [
+        "./build/*.html",
+    ],
     theme: {
         extend: {},
     },
@@ -7,4 +9,4 @@ module.exports = {
         extend: {},
     },
     plugins: [],
-}
+};
