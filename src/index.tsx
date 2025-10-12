@@ -1,43 +1,40 @@
 import { FC, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { ENV } from "@/shared/config/env.config";
+import { GeneralVarsProvider } from "@/shared/contexts/common/general.context";
 
 const CONTAINER = document.getElementById("root");
-if (!CONTAINER) throw new Error("Can't find root container")
+
+if (!CONTAINER) throw new Error("Can't find root container");
+
 const ROOT = createRoot(CONTAINER);
 
-function render (App: FC) {
-    ROOT.render(
-        process.env.NODE_ENV == 'production'
-        ? (
-            <BrowserRouter>
+function render(App: FC) {
+    const app_tree = (
+        <BrowserRouter>
+            <GeneralVarsProvider>
                 <App />
-            </BrowserRouter>
-        )
-        : (
-            <StrictMode>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-            </StrictMode>
-        )
+            </GeneralVarsProvider>
+        </BrowserRouter>
     );
+
+    ROOT.render(ENV.dev ? <StrictMode>{app_tree}</StrictMode> : app_tree);
 }
 
 render((await import("@/app")).default);
 
-// Just for Type safety
-declare global {
-    interface ImportMeta {
-        webpackHot?: { accept(path: string, callback: () => void): void; };
-    }
-}
-
+// @ts-expect-error normally no runtime/compile problem
 if (import.meta.webpackHot) {
     console.log("webpackHot enabled");
-    import.meta.webpackHot.accept("@/app", () => {
-        void import("@/app")
-            .then(({ default: App }) => { render(App); })
-            .catch();
-    });
+
+    // @ts-expect-error it is executed only if the detected error is not an error
+    import.meta.webpackHot.accept(  // eslint-disable-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        "@/app",
+        () => {
+            void import("@/app")
+                .then((value) => { return value.default; })
+                .then(render);
+        },
+    );
 }
