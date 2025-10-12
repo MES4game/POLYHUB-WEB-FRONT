@@ -1,20 +1,20 @@
 import { FC, ReactNode, useEffect } from "react";
-import "@/ui/components/navbar/navbar.component.css";
+import "@/ui/components/home/sidebar/sidebar.component.css";
 
-const NavbarComp: FC = (): ReactNode => {
+const SidebarComp : FC = () : ReactNode => {
     useEffect(() => {
         console.log("Loaded: NavbarComp");
     }, []);
-
+    
     useEffect(() => {
         console.log("Rendered: NavbarComp");
     });
 
     return (
-        <header id='navbar'>
-            <p>PolyHUB</p>
-        </header>
+        <div id="sidebar">
+            <p>Sidebar</p>
+        </div>
     );
-}
+};
 
-export default NavbarComp;
+export default SidebarComp;

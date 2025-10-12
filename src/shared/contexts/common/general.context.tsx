@@ -1,10 +1,12 @@
 import { FC, ReactNode, createContext, useContext, useEffect } from "react";
 import { SmartRef } from "@/shared/models/common/hook.model";
 import { useSmartRef } from "@/shared/utils/common/hook.util";
-import { ComponentProps } from "@/shared/models/common/props.model";
+import { mapUser, User } from "@/shared/models/user.model";
+import { getSelf } from "@/api/user.api";
 
 interface GeneralVarsType {
-    readonly dev: SmartRef<boolean>;
+    token: SmartRef<string>;
+    user : SmartRef<User>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -13,13 +15,28 @@ export interface GeneralVarsProviderProps {
     readonly children: ReactNode;
 }
 
-export const GeneralVarsProvider: FC<ComponentProps> = (props: ComponentProps): ReactNode => {
+export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: GeneralVarsProviderProps): ReactNode => {
     const context_value: GeneralVarsType = {
-        dev: useSmartRef(process.env.NODE_ENV === "development")
+        token: useSmartRef(""),
+        user : useSmartRef(mapUser({})),
     };
 
     useEffect(() => {
         console.log("Loaded: GeneralVarsProvider");
+
+        const unsubscribers: (() => void)[] = [];
+
+        unsubscribers.push(context_value.token.subscribe((_, curr) => { sessionStorage.setItem("token", curr); }));
+
+        unsubscribers.push(context_value.token.subscribe((_, curr) => {
+            getSelf(curr)
+                .then((value) => { context_value.user.current = value; })
+                .catch(alert);
+        }, true));
+
+        context_value.token.current = sessionStorage.getItem("token") ?? "";
+
+        return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
 
     useEffect(() => {
@@ -36,8 +53,7 @@ export const GeneralVarsProvider: FC<ComponentProps> = (props: ComponentProps): 
 export function useGeneralVars(): GeneralVarsType {
     const context = useContext(GeneralVarsContext);
 
-    if (!context)
-        throw new Error("useGeneralVars must be used within a GeneralVarsProvider");
+    if (!context) throw new Error("useGeneralVars must be used within a GeneralVarsProvider");
 
     return context;
-};
+}
