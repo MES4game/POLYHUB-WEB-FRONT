@@ -10,13 +10,14 @@ export const DaySelectorComp = () => {
     const [date, setDate] = React.useState<Date | undefined>(new Date());
 
     return (
-        <Calendar
-            id="daySelector"
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            className="rounded-md border shadow-sm"
-            captionLayout="dropdown"
-        />
+        <div className="w-full h-full flex items-start justify-center p-4">
+            <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="w-full max-w-sm rounded-lg border shadow-md"
+                captionLayout="dropdown"
+            />
+        </div>
     );
 };
