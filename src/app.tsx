@@ -6,6 +6,7 @@ import "@/tailwind.css";
 
 const HomePage  = lazy(() => { return import("@/ui/pages/home/home.page"); });
 const LoginPage = lazy(() => { return import("@/ui/pages/login/login.page"); });
+const RegisterPage = lazy(() => { return import("@/ui/pages/register/register.page"); });
 
 const App: FC = (): ReactNode => {
     useEffect(() => {
@@ -20,6 +21,7 @@ const App: FC = (): ReactNode => {
         <Suspense fallback={<LoadingComp />}>
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
                 <Route path="*" element={<HomePage />} />
             </Routes>
         </Suspense>
