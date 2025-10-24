@@ -9,7 +9,6 @@
 
 !setup.sh
 
-!.dockerignore
 !.docker/
 !.docker/**
 

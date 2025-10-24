@@ -3,8 +3,8 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN npm install -g npm@latest \
-    && npm ci \
-    && npm run build:run -- --output-path=/build
+    && npm i \
+    && npm run build -- --lint-skip --build-output-path=/build
 
 # Stage 2: Serve with nginx
 FROM nginx:alpine
@@ -21,7 +21,7 @@ RUN cp -f /nginx.conf /etc/nginx/conf.d/default.conf \
     && chmod +x /entrypoint.sh
 
 WORKDIR /usr/share/nginx/html
-COPY --from=builder /build .
 RUN rm -rf ./*
+COPY --from=builder /build .
 
 ENTRYPOINT ["/entrypoint.sh"]
