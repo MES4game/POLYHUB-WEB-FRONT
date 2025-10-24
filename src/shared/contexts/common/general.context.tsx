@@ -2,11 +2,12 @@ import { FC, ReactNode, createContext, useContext, useEffect } from "react";
 import { SmartRef } from "@/shared/models/common/hook.model";
 import { useSmartRef } from "@/shared/utils/common/hook.util";
 import { mapUser, User } from "@/shared/models/user.model";
-import { getSelf } from "@/api/user.api";
+import { getSelf, getIsAdmin } from "@/api/user.api";
 
 interface GeneralVarsType {
-    token: SmartRef<string>;
-    user : SmartRef<User>;
+    token   : SmartRef<string>;
+    user    : SmartRef<User>;
+    is_admin: SmartRef<boolean>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -17,8 +18,9 @@ export interface GeneralVarsProviderProps {
 
 export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: GeneralVarsProviderProps): ReactNode => {
     const context_value: GeneralVarsType = {
-        token: useSmartRef(""),
-        user : useSmartRef(mapUser({})),
+        token   : useSmartRef(""),
+        user    : useSmartRef(mapUser({})),
+        is_admin: useSmartRef(false),
     };
 
     useEffect(() => {
@@ -31,6 +33,12 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelf(curr)
                 .then((value) => { context_value.user.current = value; })
+                .catch(alert);
+        }, true));
+
+        unsubscribers.push(context_value.token.subscribe((_, curr) => {
+            getIsAdmin(curr)
+                .then((value) => { context_value.is_admin.current = value; })
                 .catch(alert);
         }, true));
 
