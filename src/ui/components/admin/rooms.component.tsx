@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect, useState } from "react";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemSeparator, ItemTitle } from "#/components/ui/item";
 import { Location } from "@/shared/models/common/location.model";
 import { Button } from "#/components/ui/button";
-import { EllipsisVertical } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
@@ -125,19 +125,26 @@ const RoomsComp : FC = (): ReactNode => {
             <h1 className="ml-3 mt-3"><b>Gérer les salles</b></h1>
 
             <ItemGroup className="gap-0 max-w-sm">
-                {rooms.map((location: Location, index: number) => {
+                {rooms.toSorted((a: Location, b: Location) => {
+                    return a.building < b.building ? -1 : a.building === b.building ? 0 : 1;
+                }).map((location: Location, index: number) => {
                     return (
                         <div key={index}>
-                            <Item>
+                            <Item className="h-fit">
                                 <ItemContent>
                                     <ItemTitle>Bâtiment : {location.building}</ItemTitle>
-                                    <ItemDescription>Salle : {location.room} <br /> {location.description}</ItemDescription>
+                                    
+                                    <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
+                                        Salle : {location.room} <br /> {location.description}
+                                    </ItemDescription>
                                 </ItemContent>
 
                                 <ItemActions>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <EllipsisVertical className="color-black hover:bg-gray-200 rounded-full" />
+                                            <Button>
+                                                <Trash2 />
+                                            </Button>
                                         </DialogTrigger>
 
                                         <DialogContent>
