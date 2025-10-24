@@ -1,5 +1,6 @@
 import { FC, ReactNode, useEffect } from "react";
 import "@/ui/components/home/calendar/calendar.component.css";
+import { Button } from "#/components/ui/button";
 
 const CalendarComp: FC = (): ReactNode => {
     useEffect(() => {
@@ -12,7 +13,7 @@ const CalendarComp: FC = (): ReactNode => {
 
     return (
         <div id="calendar">
-            <p>Calendrier</p>
+            <Button>Type me !</Button>
         </div>
     );
 };
