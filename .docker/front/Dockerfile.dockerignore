@@ -1,12 +1,10 @@
 *
 
-!.dockerignore
-!docker/
-!docker/**
-
 !package.json
 !package-lock.json
 !tsconfig.json
+!scripts/
+!scripts/**
 
 !webpack.config.mjs
 !postcss.config.mjs
