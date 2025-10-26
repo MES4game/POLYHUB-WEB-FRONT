@@ -22,7 +22,7 @@ const AdminTabsComp : FC = (): ReactNode => {
     });
 
     return (
-        <div>
+        <div className="h-screen overflow-y-auto">
             <Tabs defaultValue="edt">
                 <TabsList>
                     <TabsTrigger value="edt">EDT</TabsTrigger>
