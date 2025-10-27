@@ -6,13 +6,12 @@ import { EllipsisVertical } from "lucide-react";
 import { Dialog, DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const RoomsComp : FC = (): ReactNode => {
-    
     const [rooms, setRooms] = useState<Location[]>([]);
 
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset } = useForm<IFormInput>();
 
     useEffect(() => {
         // toDo call API to init rooms
@@ -42,23 +41,33 @@ const RoomsComp : FC = (): ReactNode => {
         setRooms([...rooms]);
     };
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    interface IFormInput {
+        existing_building: string;
+        building         : string;
+        room             : string;
+        description      : string;
+    }
+
+    const onSubmit: SubmitHandler<IFormInput> = (data) => {
         // toDo call API to add room
-        const newRoom: Location = {
-            building: data.existingBuilding || data.building,
-            room: data.room,
+        const new_room: Location = {
+            building   : data.existing_building || data.building,
+            room       : data.room,
             description: data.description,
         };
+
         for (const room of rooms) {
-            if (room.building === newRoom.building && room.room === newRoom.room) {
+            if (room.building === new_room.building && room.room === new_room.room) {
                 reset();
                 alert("La salle existe déjà !");
+
                 return;
             }
         }
+
         reset();
-        setRooms([...rooms, newRoom]);
-    }
+        setRooms([...rooms, new_room]);
+    };
 
     return (
         <div>
@@ -66,19 +75,24 @@ const RoomsComp : FC = (): ReactNode => {
                 <DialogTrigger asChild>
                     <Button className="ml-1">Ajouter une salle</Button>
                 </DialogTrigger>
+
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Ajouter une salle</DialogTitle>
                     </DialogHeader>
+
                     <DialogDescription>
                         Ajouter une nouvelle salle à un bâtiment existant ou créer un nouveau bâtiment.
                     </DialogDescription>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+
+                    <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }}>
                         <div className="flex flex-col gap-4 mt-4">
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm">Sélectionner un bâtiment existant</label>
-                                <select {...register("existingBuilding")} className="p-2 border rounded">
+
+                                <select {...register("existing_building")} className="p-2 border rounded">
                                     <option value="">-- Choisir un bâtiment --</option>
+
                                     {Array.from(new Set(rooms.map((r) => { return r.building; }))).map((b) => {
                                         return (
                                             <option value={b}>
@@ -87,23 +101,30 @@ const RoomsComp : FC = (): ReactNode => {
                                         );
                                     })}
                                 </select>
+
                                 <div className="text-center text-xs text-gray-500 my-1">ou</div>
                                 <label className="text-sm">Ajouter un nouveau bâtiment</label>
                             </div>
+
                             <Input type="text" {...register("building")} placeholder="Bâtiment" />
                             <Input type="text" {...register("room", { required: true })} placeholder="Salle" />
                             <textarea {...register("description", { required: true })} placeholder="Description" />
+
                             <DialogClose asChild>
                                 <Button type="submit">Ajouter</Button>
                             </DialogClose>
 
-                    <DialogClose asChild>
-                        <Button variant="outline">Annuler</Button>
-                    </DialogClose>
-                </div>
-                </form>
-            </DialogContent>
-        </Dialog><h1 className="ml-3 mt-3"><b>Gérer les salles</b></h1><ItemGroup className="gap-0 max-w-sm">
+                            <DialogClose asChild>
+                                <Button variant="outline">Annuler</Button>
+                            </DialogClose>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <h1 className="ml-3 mt-3"><b>Gérer les salles</b></h1>
+
+            <ItemGroup className="gap-0 max-w-sm">
                 {rooms.map((location: Location, index: number) => {
                     return (
                         <div key={index}>
@@ -127,7 +148,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                                             <div className="flex flex-col gap-4 mt-4">
                                                 <DialogClose asChild>
-                                                    <Button variant="destructive" onClick={() => { deleteRoom(index); } }>Supprimer</Button>
+                                                    <Button variant="destructive" onClick={() => { deleteRoom(index); }}>Supprimer</Button>
                                                 </DialogClose>
 
                                                 <DialogClose asChild>
