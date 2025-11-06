@@ -12,3 +12,10 @@ export async function getSelf(_token: string): Promise<User> {
 
     return mapUser(USERS[0]);
 }
+
+export async function getIsAdmin(_token: string): Promise<boolean> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return true;
+}
