@@ -9,6 +9,7 @@ interface GeneralVarsType {
     user    : SmartRef<User>;
     is_admin: SmartRef<boolean>;
     is_modo : SmartRef<boolean>;
+    selecteddate: SmartRef<Date | undefined>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -23,6 +24,7 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         user    : useSmartRef(mapUser({})),
         is_admin: useSmartRef(false),
         is_modo : useSmartRef(false),
+        selecteddate: useSmartRef<Date | undefined>(new Date()),
     };
 
     useEffect(() => {
