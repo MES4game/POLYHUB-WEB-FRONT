@@ -5,8 +5,9 @@ import { mapUser, User } from "@/shared/models/user.model";
 import { getSelf } from "@/api/user.api";
 
 interface GeneralVarsType {
-    token: SmartRef<string>;
-    user : SmartRef<User>;
+    token       : SmartRef<string>;
+    user        : SmartRef<User>;
+    selecteddate: SmartRef<Date | undefined>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -17,8 +18,9 @@ export interface GeneralVarsProviderProps {
 
 export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: GeneralVarsProviderProps): ReactNode => {
     const context_value: GeneralVarsType = {
-        token: useSmartRef(""),
-        user : useSmartRef(mapUser({})),
+        token       : useSmartRef(""),
+        user        : useSmartRef(mapUser({})),
+        selecteddate: useSmartRef<Date | undefined>(new Date()),
     };
 
     useEffect(() => {

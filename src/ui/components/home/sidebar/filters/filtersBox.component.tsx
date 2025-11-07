@@ -10,6 +10,19 @@ type HeaderView = "events" | "filters";
 
 export const FiltersBoxComp = () => {
     const [active_view, setActiveView] = React.useState<HeaderView>("events");
+    
+    const formatCurrentDate = (): string => {
+        const today = new Date();
+        
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: "long",
+            year   : "numeric",
+            month  : "long",
+            day    : "numeric",
+        };
+        
+        return today.toLocaleDateString("fr-FR", options);
+    };
 
     return (
         <div className="w-full h-full flex-1 flex items-start justify-center px-4 pt-2 pb-4">
@@ -20,7 +33,9 @@ export const FiltersBoxComp = () => {
                     {active_view === "events"
                         ? (
                             <div>
-                                <p className="text-sm text-gray-500">Les événements du jour apparaîtront ici</p>
+                                <p className="text-sm text-gray-500">
+                                    {formatCurrentDate()}
+                                </p>
                             </div>
                         )
                         : (
