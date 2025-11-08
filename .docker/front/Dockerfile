@@ -1,27 +1,18 @@
-# Stage 1: Build React app with Webpack
-FROM node:24-alpine AS builder
+# Stage 1: Build React app
+FROM node:24.11.0-trixie-slim AS builder
 WORKDIR /app
 COPY . .
-RUN npm install -g npm@latest \
-    && npm i \
+RUN npm ci \
     && npm run build -- --lint-skip --build-output-path=/build
 
 # Stage 2: Serve with nginx
-FROM nginx:alpine
+FROM nginx:1.29.3-trixie
 
+EXPOSE 80
 VOLUME /mounted
 
-ENV DEV=false \
-    HOST=127.0.0.1 \
-    API_URL=https://127.0.0.1/api \
-    DATA_URL=https://127.0.0.1/data
-
-COPY --from=docker_config_folder . /
-RUN cp -f /nginx.conf /etc/nginx/conf.d/default.conf \
-    && chmod +x /entrypoint.sh
-
 WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=builder /build .
+COPY --chmod=555 --from=builder /build .
+COPY --chmod=775 --from=docker_config_folder nginx.conf /etc/nginx/conf.d/default.conf
 
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
