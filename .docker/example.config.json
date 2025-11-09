@@ -1,0 +1,6 @@
+{
+    "dev": false,
+    "host": "localhost",
+    "api_url": "http://localhost/api",
+    "data_url": "http://localhost/data"
+}

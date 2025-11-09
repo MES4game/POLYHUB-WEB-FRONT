@@ -49,6 +49,7 @@ jobs:
             type=semver,pattern={{version}},match=v(\d+.\d+.\d+)$
             type=semver,pattern={{major}}.{{minor}},match=v(\d+.\d+.\d+)$
             type=semver,pattern={{major}},match=v(\d+.\d+.\d+)$
+            ${{ (endsWith(github.ref, '-lts') && 'lts') || '' }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -72,3 +73,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-contexts: |
             docker_config_folder=${{ vars.DOCKER_CONFIG_FOLDER || './.docker' }}
+          platforms: linux/amd64,linux/arm64

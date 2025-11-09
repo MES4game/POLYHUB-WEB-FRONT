@@ -15,4 +15,4 @@ const mapEnv = createMapper<IEnv>({
     data_url: createConverter(unknownToString, "https://127.0.0.1/data"),  // eslint-disable-line @typescript-eslint/naming-convention
 });
 
-export const ENV = mapEnv(await (await fetch("/runtime-config.json")).json());
+export const ENV = mapEnv(await (await fetch("/config.json")).json());
