@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import LoadingComp from "@/ui/components/common/loading.component";
 import "@/app.css";
 import "@/tailwind.css";
+import AdminPage from "@/ui/pages/admin/admin.page";
 
 const HomePage  = lazy(() => { return import("@/ui/pages/home/home.page"); });
 const LoginPage = lazy(() => { return import("@/ui/pages/login/login.page"); });
@@ -22,6 +23,7 @@ const App: FC = (): ReactNode => {
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/admin" element={<AdminPage />} />
                 <Route path="*" element={<HomePage />} />
             </Routes>
         </Suspense>
