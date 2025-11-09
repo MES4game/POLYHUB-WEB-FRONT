@@ -1,0 +1,39 @@
+.event-dialog {
+  /* Mobile: 90% width with constraints */
+  width: 90%;
+  min-width: 280px;  /* Minimum readable width */
+  max-width: 500px;  /* Don't get too wide on small screens */
+}
+
+/* Tablets and up (≥640px) */
+@media (min-width: 640px) {
+  .event-dialog {
+    width: 80%;
+    max-width: 600px;
+  }
+}
+
+/* Medium screens (≥768px) */
+@media (min-width: 768px) {
+  .event-dialog {
+    width: 70%;
+    max-width: 700px;
+  }
+}
+
+/* Large screens (≥1024px) */
+@media (min-width: 1024px) {
+  .event-dialog {
+    width: 60%;
+    max-width: 800px;
+  }
+}
+
+/* Extra large screens (≥1280px) */
+@media (min-width: 1280px) {
+  .event-dialog {
+    width: 50%;
+    max-width: 900px;
+  }
+}
+
