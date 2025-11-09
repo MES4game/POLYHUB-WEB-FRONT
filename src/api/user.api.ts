@@ -13,9 +13,45 @@ export async function getSelf(_token: string): Promise<User> {
     return mapUser(USERS[0]);
 }
 
-export async function getIsAdmin(_token: string): Promise<boolean> {
+export async function getSelfIsAdmin(_token: string): Promise<boolean> {
     // Just to remove error from linter of no await inside an async function
     await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
 
     return true;
+}
+
+export async function getSelfIsModo(_token: string): Promise<boolean> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return true;
+}
+
+
+export async function getIsTeacher(user_id: number): Promise<boolean> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return user_id % 2 === 0;
+}
+
+export async function setIsTeacher(_user_id: number, _is_teacher: boolean): Promise<void> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return;
+}
+
+export async function getIsModo(user_id: number): Promise<boolean> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return user_id % 3 === 0;
+}
+
+export async function setIsModo(_user_id: number, _is_moderator: boolean): Promise<void> {
+    // Just to remove error from linter of no await inside an async function
+    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+
+    return;
 }
