@@ -21,14 +21,8 @@ interface EventDialogProps {
 }
 
 export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): ReactNode => {
-    // const [date, setDate] = useState<Date | undefined>(new Date());
-    // const [selectedTime, setSelectedTime] = useState<string>("10:00");
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
-        // // Add your event creation logic here
-        // console.log("Event created", { date, time: selectedTime });
         onClose();
     };
 
