@@ -2,12 +2,13 @@ import { FC, ReactNode, createContext, useContext, useEffect } from "react";
 import { SmartRef } from "@/shared/models/common/hook.model";
 import { useSmartRef } from "@/shared/utils/common/hook.util";
 import { mapUser, User } from "@/shared/models/user.model";
-import { getSelf, getIsAdmin } from "@/api/user.api";
+import { getSelf, getSelfIsAdmin, getSelfIsModo } from "@/api/user.api";
 
 interface GeneralVarsType {
     token   : SmartRef<string>;
     user    : SmartRef<User>;
     is_admin: SmartRef<boolean>;
+    is_modo : SmartRef<boolean>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -21,6 +22,7 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         token   : useSmartRef(""),
         user    : useSmartRef(mapUser({})),
         is_admin: useSmartRef(false),
+        is_modo : useSmartRef(false),
     };
 
     useEffect(() => {
@@ -37,8 +39,14 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         }, true));
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
-            getIsAdmin(curr)
+            getSelfIsAdmin(curr)
                 .then((value) => { context_value.is_admin.current = value; })
+                .catch(alert);
+        }, true));
+
+        unsubscribers.push(context_value.token.subscribe((_, curr) => {
+            getSelfIsModo(curr)
+                .then((value) => { context_value.is_modo.current = value; })
                 .catch(alert);
         }, true));
 
