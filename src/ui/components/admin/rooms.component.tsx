@@ -206,7 +206,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                                                     <Input
                                                         type="text"
-                                                        {...registerEdit("building")}
+                                                        {...registerEdit("building", { required: true })}
                                                         defaultValue={location.building}
                                                         placeholder="Bâtiment"
                                                     />
@@ -215,7 +215,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                                                     <Input
                                                         type="text"
-                                                        {...registerEdit("room")}
+                                                        {...registerEdit("room", { required: true })}
                                                         defaultValue={location.room}
                                                         placeholder="Salle"
                                                     />
@@ -225,7 +225,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                                                     <textarea
                                                         className="w-full border rounded"
-                                                        {...registerEdit("description")}
+                                                        {...registerEdit("description", { required: true })}
                                                         defaultValue={location.description}
                                                         placeholder="Description"
                                                     />
