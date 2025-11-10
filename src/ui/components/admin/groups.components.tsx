@@ -37,11 +37,11 @@ const GroupsComp : FC = (): ReactNode => {
     }, []);
 
     useEffect(() => {
-        console.log("Rendered: RoomsComp");
+        console.log("Rendered: GroupsComp");
     });
 
-    const deleteRoom = (index: number) => {
-        // toDo call API to delete room
+    const deleteGroup = (index: number) => {
+        // toDo call API to delete group
         groups.splice(index, 1);
         setGroups([...groups]);
     };
@@ -136,7 +136,7 @@ const GroupsComp : FC = (): ReactNode => {
                 </DialogContent>
             </Dialog>
 
-            <h1 className="ml-3 mt-3"><b>Gérer les salles</b></h1>
+            <h1 className="ml-3 mt-3"><b>Gérer les groupes</b></h1>
 
             <ItemGroup className="gap-0 max-w-sm">
                 {groups.toSorted((a: Group, b: Group) => {
@@ -157,7 +157,7 @@ const GroupsComp : FC = (): ReactNode => {
                                 <ItemActions>
                                     <Dialog onOpenChange={(open) => {
                                         if (open) {
-                                            // when opening the edit dialog, reset the edit form with the current room values
+                                            // when opening the edit dialog, reset the edit form with the current group values
                                             reset();
                                         }
                                     }}
@@ -250,13 +250,13 @@ const GroupsComp : FC = (): ReactNode => {
 
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Supprimer la salle</DialogTitle>
+                                                <DialogTitle>Supprimer le groupe</DialogTitle>
                                                 <DialogDescription>Cette action est irréversible.</DialogDescription>
                                             </DialogHeader>
 
                                             <div className="flex flex-col gap-4 mt-4">
                                                 <DialogClose asChild>
-                                                    <Button variant="destructive" onClick={() => { deleteRoom(index); }}>Supprimer</Button>
+                                                    <Button variant="destructive" onClick={() => { deleteGroup(index); }}>Supprimer</Button>
                                                 </DialogClose>
 
                                                 <DialogClose asChild>
