@@ -2,16 +2,18 @@ import { FC, ReactNode, useEffect, useState } from "react";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemSeparator, ItemTitle } from "#/components/ui/item";
 import { Location } from "@/shared/models/common/location.model";
 import { Button } from "#/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Label } from "@radix-ui/react-label";
 
 const RoomsComp : FC = (): ReactNode => {
     const [rooms, setRooms] = useState<Location[]>([]);
 
     const { register, handleSubmit, reset } = useForm<IFormInput>();
+    const { register: registerEdit, handleSubmit: handleEditSubmit, reset: resetEdit } = useForm<IEditFormInput>();
 
     useEffect(() => {
         // toDo call API to init rooms
@@ -48,6 +50,12 @@ const RoomsComp : FC = (): ReactNode => {
         description      : string;
     }
 
+    interface IEditFormInput {
+        building   : string;
+        room       : string;
+        description: string;
+    }
+
     const onSubmit: SubmitHandler<IFormInput> = (data) => {
         // toDo call API to add room
         const new_room: Location = {
@@ -67,6 +75,36 @@ const RoomsComp : FC = (): ReactNode => {
 
         reset();
         setRooms([...rooms, new_room]);
+    };
+
+    const onEditSubmit = (data: IEditFormInput, index: number) => {
+        // toDo call API to edit room
+        const room: Location = {
+            building   : data.building,
+            room       : data.room,
+            description: data.description,
+        };
+
+        for (let i = 0; i < rooms.length; i++) {
+            if (i === index) continue;
+            const r = rooms[i];
+
+            if (room.building === r?.building && room.room === r.room) {
+                alert("La salle existe déjà !");
+
+                return;
+            }
+        }
+
+        resetEdit();
+
+        // update the room at the given index
+        setRooms((prev) => {
+            const copy = [...prev];
+            copy[index] = room;
+
+            return copy;
+        });
     };
 
     return (
@@ -108,7 +146,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                             <Input type="text" {...register("building")} placeholder="Bâtiment" />
                             <Input type="text" {...register("room", { required: true })} placeholder="Salle" />
-                            <textarea {...register("description", { required: true })} placeholder="Description" />
+                            <textarea className="border rounded" {...register("description", { required: true })} placeholder="Description" />
 
                             <DialogClose asChild>
                                 <Button type="submit">Ajouter</Button>
@@ -140,6 +178,72 @@ const RoomsComp : FC = (): ReactNode => {
                                 </ItemContent>
 
                                 <ItemActions>
+                                    <Dialog onOpenChange={(open) => {
+                                        if (open) {
+                                            // when opening the edit dialog, reset the edit form with the current room values
+                                            resetEdit({
+                                                building   : location.building,
+                                                room       : location.room,
+                                                description: location.description,
+                                            });
+                                        }
+                                    }}
+                                    >
+                                        <DialogTrigger asChild>
+                                            <Button>
+                                                <Edit />
+                                            </Button>
+                                        </DialogTrigger>
+
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Modifier la salle</DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="flex flex-col gap-4 mt-4">
+                                                <form onSubmit={(e) => { void handleEditSubmit((data) => { onEditSubmit(data, index); })(e); }}>
+                                                    <Label>Bâtiment</Label>
+
+                                                    <Input
+                                                        type="text"
+                                                        {...registerEdit("building", { required: true })}
+                                                        defaultValue={location.building}
+                                                        placeholder="Bâtiment"
+                                                    />
+
+                                                    <Label>Salle</Label>
+
+                                                    <Input
+                                                        type="text"
+                                                        {...registerEdit("room", { required: true })}
+                                                        defaultValue={location.room}
+                                                        placeholder="Salle"
+                                                    />
+
+                                                    <Label>Description</Label>
+                                                    <br />
+
+                                                    <textarea
+                                                        className="w-full border rounded"
+                                                        {...registerEdit("description", { required: true })}
+                                                        defaultValue={location.description}
+                                                        placeholder="Description"
+                                                    />
+
+                                                    <br />
+
+                                                    <DialogClose asChild>
+                                                        <Button type="submit">Enregistrer</Button>
+                                                    </DialogClose>
+
+                                                    <DialogClose asChild>
+                                                        <Button variant="outline">Annuler</Button>
+                                                    </DialogClose>
+                                                </form>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <Button>
