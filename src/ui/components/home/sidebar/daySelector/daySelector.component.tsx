@@ -10,7 +10,7 @@ export const DaySelectorComp = () => {
     const [date, setDate] = React.useState<Date | undefined>(new Date());
 
     return (
-        <div className="w-full flex items-start justify-center px-4 pt-4 pb-2">
+        <div className="w-full flex items-start justify-center px-4 pt-2 pb-2">
             <Calendar
                 mode="single"
                 selected={date}
