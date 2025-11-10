@@ -3,9 +3,10 @@ export interface EventModel {
     title       : string;
     start_time  : string;
     end_time    : string;
-    location    : string;
-    professor   : string;
+    location    : string[];
+    professor   : string[];
     category    : string;
+    group       : string[];
     color       : EventColor;
     is_following: boolean;
 }
