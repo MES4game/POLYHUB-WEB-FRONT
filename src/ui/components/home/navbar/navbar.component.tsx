@@ -20,7 +20,7 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
 
     return (
         <header id="navbar">
-            <p>PolyHUB</p>
+            <Link to="/">PolyHUB</Link>
             
             <FormatButtonsComp
                 value={calendarformat}

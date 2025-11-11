@@ -4,6 +4,7 @@ import AdminTabsComp from "@/ui/components/admin/adminTabs.component";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { useReRender } from "@/shared/utils/common/hook.util";
 import { Link } from "react-router-dom";
+import NavbarComp from "@/ui/components/home/navbar/navbar.component";
 
 
 const AdminPage: FC = (): ReactNode => {
@@ -27,6 +28,7 @@ const AdminPage: FC = (): ReactNode => {
 
     return (
         <div id="admin-page">
+            <NavbarComp />
             {(is_admin.current || is_modo.current) ? <AdminTabsComp /> : <Link to="/">Page indisponible</Link>}
         </div>
     );
