@@ -107,7 +107,7 @@ const UsersComp : FC = (): ReactNode => {
                                             checked={is_teacher}
                                             className="h-full"
                                             onChange={() => {
-                                                setIsTeacher(token.current, user.id, !is_teacher).then(() => {
+                                                setIsTeacher(token.current, user.id, !is_teacher).then(() => { // eslint-disable-line
                                                     setUsersRoles((prev) => {
                                                         return prev.map((role) => {
                                                             return role.user.id === user.id
@@ -128,7 +128,7 @@ const UsersComp : FC = (): ReactNode => {
                                                     checked={is_modo}
                                                     className="h-full"
                                                     onChange={() => {
-                                                        setIsModo(token.current, user.id, !is_modo).then(() => {
+                                                        setIsModo(token.current, user.id, !is_modo).then(() => { // eslint-disable-line
                                                             setUsersRoles((prev) => {
                                                                 return prev.map((role) => {
                                                                     return role.user.id === user.id
