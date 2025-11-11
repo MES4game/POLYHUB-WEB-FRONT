@@ -34,14 +34,14 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const [selected_color, setSelectedColor] = useState("#3b82f6");
 
     const predefined_colors = [
-        "#3b82f6", // blue
-        "#ef4444", // red
-        "#10b981", // green
-        "#f59e0b", // yellow
-        "#8b5cf6", // purple
-        "#ec4899", // pink
-        "#06b6d4", // cyan
-        "#f97316", // orange
+        "#3b82f6",
+        "#ef4444",
+        "#10b981",
+        "#f59e0b",
+        "#8b5cf6",
+        "#ec4899",
+        "#06b6d4",
+        "#f97316",
     ];
 
     const locations = [
@@ -110,22 +110,25 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
         if (!date) return "Sélectionner une date";
 
         return date.toLocaleDateString("fr-FR", {
-            day: "numeric",
+            day  : "numeric",
             month: "long",
-            year: "numeric",
+            year : "numeric",
         });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+
         // TODO: Handle form submission with all data
         console.log({
             locations: selected_locations,
-            date: selected_date,
+            date     : selected_date,
             start_time,
             end_time,
-            color: selected_color,
+            color    : selected_color,
         });
+
         onClose();
     };
 
@@ -135,6 +138,7 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                 <DialogHeader>
 
                     <DialogTitle>Nouvel Evenement</DialogTitle>
+
                     <DialogDescription>
                         Remplissez les détails pour créer un nouvel événement
                     </DialogDescription>
@@ -153,7 +157,6 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                         />
                     </div>
 
-                    {/* Date Selection */}
                     <div className="space-y-2">
                         <Label>Date de l'événement</Label>
 
@@ -201,7 +204,6 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                         </div>
                     </div>
 
-                    {/* Time Selection */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="start-time">Heure de début</Label>
@@ -228,7 +230,6 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                         </div>
                     </div>
 
-                    {/* Location Selection */}
                     <div className="space-y-2">
                         <Label htmlFor="event-description">Lieu</Label>
 
@@ -322,7 +323,6 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                         </div>
                     </div>
 
-                    {/* Color Picker */}
                     <div className="space-y-2">
                         <Label>Couleur de l'événement</Label>
 
@@ -341,14 +341,12 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                                         style={{ backgroundColor: color }}
                                         title={color}
                                     >
-                                        {selected_color === color && (
-                                            <Check className="h-5 w-5 mx-auto text-white drop-shadow-md" />
-                                        )}
+                                        {selected_color === color
+                                            && <Check className="h-5 w-5 mx-auto text-white drop-shadow-md" />}
                                     </button>
                                 );
                             })}
 
-                            {/* Custom Color Input */}
                             <div className="relative">
                                 <input
                                     type="color"
