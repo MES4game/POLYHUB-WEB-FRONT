@@ -9,7 +9,7 @@
     scrollbar-gutter: stable;
 }
 
-/* Header */
+
 .week-view-header {
     display: grid;
     grid-template-columns: 60px repeat(7, 1fr);
@@ -121,7 +121,7 @@
     min-height: 0;
 }
 
-/* Time Column */
+
 .time-column {
     background-color: #f9fafb;
     box-sizing: border-box;
@@ -143,7 +143,7 @@
     font-weight: 500;
 }
 
-/* Days Grid */
+
 .days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -177,7 +177,7 @@
     box-sizing: border-box;
 }
 
-/* Events Container */
+
 .events-container {
     position: absolute;
     top: 0;
@@ -187,7 +187,7 @@
     pointer-events: none;
 }
 
-/* Calendar Event Card - Renamed to avoid conflicts with sidebar */
+
 .calendar-event-card {
     position: absolute;
     left: 4px;
@@ -269,7 +269,7 @@
     white-space: nowrap;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 1024px) {
     .week-view-header {
         grid-template-columns: 50px repeat(7, 1fr);
@@ -390,13 +390,13 @@
     .calendar-event-location,
     .calendar-event-professor,
     .calendar-event-group {
-        display: none; /* Hide category, location, professor and group on very small screens */
+        display: none; 
     }
 }
 
 @media (max-width: 620px) {
     .day-name {
-        display: none; /* Hide day names on screens below 620px */
+        display: none; 
     }
 }
 
@@ -430,7 +430,7 @@
     }
 }
 
-/* Scrollbar styling */
+
 .week-view::-webkit-scrollbar {
     width: 8px;
 }
