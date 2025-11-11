@@ -4,13 +4,13 @@ import { User } from "@/shared/models/user.model";
 import { FC, ReactNode, useEffect, useState } from "react";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
-import { getIsTeacher, getIsModo, setIsTeacher, setIsModo } from "@/api/user.api";
+import { getIsTeacher, getIsModo, setIsTeacher, setIsModo, getAllUsers } from "@/api/user.api";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { useReRender } from "@/shared/utils/common/hook.util";
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group";
 
 const UsersComp : FC = (): ReactNode => {
-    const { is_admin } = useGeneralVars();
+    const { is_admin, token } = useGeneralVars();
     const [users, setUsers] = useState<User[]>([]);
     const [users_roles, setUsersRoles] = useState<{ user: User; is_teacher: boolean; is_modo: boolean }[]>([]);
     const reRender = useReRender();
@@ -23,41 +23,13 @@ const UsersComp : FC = (): ReactNode => {
 
         const unsubscribers: (() => void)[] = [];
 
+        unsubscribers.push(token.subscribe(() => { reRender(); }));
         unsubscribers.push(is_admin.subscribe(() => { reRender(); }));
-        const users_test: User[] = [
-            {
-                id             : 1,
-                pseudo         : "Palmi",
-                email          : "mael.houpline@universite-paris-saclay.fr",
-                firstname      : "Maël",
-                lastname       : "Houpline",
-                created_on     : new Date(),
-                last_connection: new Date(),
-            },
-            {
-                id             : 2,
-                pseudo         : "Toast",
-                email          : "julien.tap@universite-paris-saclay.fr",
-                firstname      : "Julien",
-                lastname       : "Tap",
-                created_on     : new Date(),
-                last_connection: new Date(),
-            },
-            {
-                id             : 3,
-                pseudo         : "MGQDG",
-                email          : "marie-gabrielle.quentin-de-gromard@universite-paris-saclay.fr",
-                firstname      : "Marie-Gabrielle",
-                lastname       : "Quentin-de-Gromard",
-                created_on     : new Date(),
-                last_connection: new Date(),
-            },
-        ];
-        setUsers(users_test);
+        getAllUsers(token.current).then((users) => { setUsers(users); });
 
-        Promise.all(users_test.map(async (user) => { // eslint-disable-line
-            const is_teacher = await getIsTeacher(user.id).then((res) => { return res; });
-            const is_modo = await getIsModo(user.id).then((res) => { return res; });
+        Promise.all(users.map(async (user) => { // eslint-disable-line
+            const is_teacher = await getIsTeacher(token.current, user.id);
+            const is_modo = await getIsModo(token.current, user.id);
 
             return { user, is_teacher: is_teacher, is_modo: is_modo };
         })).then(setUsersRoles);
