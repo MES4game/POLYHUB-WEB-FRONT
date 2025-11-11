@@ -47,6 +47,7 @@
         "react-dom": "19.2.0",
         "react-hook-form": "^7.65.0",
         "react-router-dom": "7.9.3",
+        "react-select": "^5.10.2",
         "shadcn": "3.4.0",
         "tailwind-merge": "3.3.1"
     },
@@ -58,6 +59,7 @@
         "@types/node": "^24.6.2",
         "@types/react": "19.2.0",
         "@types/react-dom": "19.2.0",
+        "@types/react-select": "^5.0.0",
         "@typescript-eslint/eslint-plugin": "8.45.0",
         "@typescript-eslint/parser": "8.45.0",
         "css-loader": "7.1.2",
