@@ -11,6 +11,7 @@ import { Group } from "@/shared/models/common/group.model";
 
 const GroupsComp : FC = (): ReactNode => {
     const [groups, setGroups] = useState<Group[]>([]);
+    const [search_term, setSearchTerm] = useState<string>("");
 
     const { register, handleSubmit, reset } = useForm<IFormInput>();
     const { register: registerEdit, handleSubmit: handleEditSubmit, reset: resetEdit } = useForm<IFormInput>();
@@ -40,8 +41,9 @@ const GroupsComp : FC = (): ReactNode => {
         console.log("Rendered: GroupsComp");
     });
 
-    const deleteGroup = (index: number) => {
+    const deleteGroup = (id: number) => {
         // toDo call API to delete group
+        const index = groups.findIndex((group) => { return group.id === id; });
         groups.splice(index, 1);
         setGroups([...groups]);
     };
@@ -104,6 +106,18 @@ const GroupsComp : FC = (): ReactNode => {
 
     return (
         <div>
+            <div id="search">
+                <Label htmlFor="search-input" className="ml-3">Rechercher :</Label>
+
+                <Input
+                    type="text"
+                    placeholder="Rechercher un groupe..."
+                    value={search_term}
+                    onChange={(e) => { setSearchTerm(e.target.value); }}
+                    className="ml-3 mb-3 w-64"
+                />
+            </div>
+
             <Dialog>
                 <DialogTrigger asChild>
                     <Button className="ml-1">Ajouter un groupe</Button>
@@ -141,137 +155,141 @@ const GroupsComp : FC = (): ReactNode => {
             <ItemGroup className="gap-0 max-w-sm">
                 {groups.toSorted((a: Group, b: Group) => {
                     return a.id - b.id;
-                }).map((group: Group, index: number) => {
-                    return (
-                        <div key={index}>
-                            <Item className="h-fit">
-                                <ItemContent>
-                                    <ItemTitle>{group.id}. {group.name}</ItemTitle>
+                })
+                    .filter((group: Group) => {
+                        return group.name.toLowerCase().includes(search_term.toLowerCase());
+                    })
+                    .map((group: Group, index: number) => {
+                        return (
+                            <div key={index}>
+                                <Item className="h-fit">
+                                    <ItemContent>
+                                        <ItemTitle>{group.id}. {group.name}</ItemTitle>
                                     
-                                    <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
+                                        <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
                                         {group.parentId && `Sous-groupe de ${group.parentId}. ${getParentName(group.parentId)}\n` /* eslint-disable-line*/ }
-                                        {group.description}
-                                    </ItemDescription>
-                                </ItemContent>
+                                            {group.description}
+                                        </ItemDescription>
+                                    </ItemContent>
 
-                                <ItemActions>
-                                    <Dialog onOpenChange={(open) => {
-                                        if (open) {
+                                    <ItemActions>
+                                        <Dialog onOpenChange={(open) => {
+                                            if (open) {
                                             // when opening the edit dialog, reset the edit form with the current group values
-                                            reset();
-                                        }
-                                    }}
-                                    >
-                                        <DialogTrigger asChild>
-                                            <Button>
-                                                <Edit />
-                                            </Button>
-                                        </DialogTrigger>
+                                                reset();
+                                            }
+                                        }}
+                                        >
+                                            <DialogTrigger asChild>
+                                                <Button>
+                                                    <Edit />
+                                                </Button>
+                                            </DialogTrigger>
 
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Modifier le groupe</DialogTitle>
-                                            </DialogHeader>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Modifier le groupe</DialogTitle>
+                                                </DialogHeader>
 
-                                            <div className="flex flex-col gap-4 mt-4">
-                                                <form onSubmit={(e) => { void handleEditSubmit((data) => { onEditSubmit(data, index); })(e); }}>
-                                                    <Label>Nom</Label>
+                                                <div className="flex flex-col gap-4 mt-4">
+                                                    <form onSubmit={(e) => { void handleEditSubmit((data) => { onEditSubmit(data, index); })(e); }}>
+                                                        <Label>Nom</Label>
 
-                                                    <Input
-                                                        type="text"
-                                                        {...registerEdit("name", { required: true })}
-                                                        defaultValue={group.name}
-                                                        placeholder="Nom du groupe"
-                                                    />
+                                                        <Input
+                                                            type="text"
+                                                            {...registerEdit("name", { required: true })}
+                                                            defaultValue={group.name}
+                                                            placeholder="Nom du groupe"
+                                                        />
 
-                                                    <Label>Description</Label>
-                                                    <br />
+                                                        <Label>Description</Label>
+                                                        <br />
 
-                                                    <textarea
-                                                        className="w-full border rounded"
-                                                        {...registerEdit("description", { required: true })}
-                                                        defaultValue={group.description}
-                                                        placeholder="Description"
-                                                    />
+                                                        <textarea
+                                                            className="w-full border rounded"
+                                                            {...registerEdit("description", { required: true })}
+                                                            defaultValue={group.description}
+                                                            placeholder="Description"
+                                                        />
 
+                                                        <DialogClose asChild>
+                                                            <Button type="submit">Enregistrer</Button>
+                                                        </DialogClose>
+
+                                                        <DialogClose asChild>
+                                                            <Button variant="outline">Annuler</Button>
+                                                        </DialogClose>
+                                                    </form>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button>
+                                                    <PlusCircle />
+                                                </Button>
+                                            </DialogTrigger>
+
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Ajouter un sous-groupe</DialogTitle>
+                                                </DialogHeader>
+
+                                                <DialogDescription>
+                                                    Ajouter un nouveau sous-groupe à {group.name}
+                                                </DialogDescription>
+
+                                                <form onSubmit={(e) => { void handleAddSubmit((data) => { onAddSubmit(data, group.id); })(e); }}>
+                                                    <div className="flex flex-col gap-4 mt-4">
+
+                                                        <Input type="text" {...registerAdd("name", { required: true })} placeholder="Nom du groupe" />
+                                                    
+                                                        <textarea
+                                                            className="border rounded"
+                                                            {...registerAdd("description", { required: true })}
+                                                            placeholder="Description"
+                                                        />
+
+                                                        <DialogClose asChild>
+                                                            <Button type="submit">Valider</Button>
+                                                        </DialogClose>
+                                                    </div>
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button>
+                                                    <Trash2 />
+                                                </Button>
+                                            </DialogTrigger>
+
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Supprimer le groupe</DialogTitle>
+                                                    <DialogDescription>Cette action est irréversible.</DialogDescription>
+                                                </DialogHeader>
+
+                                                <div className="flex flex-col gap-4 mt-4">
                                                     <DialogClose asChild>
-                                                        <Button type="submit">Enregistrer</Button>
+                                                        <Button variant="destructive" onClick={() => { deleteGroup(group.id); }}>Supprimer</Button>
                                                     </DialogClose>
 
                                                     <DialogClose asChild>
                                                         <Button variant="outline">Annuler</Button>
                                                     </DialogClose>
-                                                </form>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
-
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button>
-                                                <PlusCircle />
-                                            </Button>
-                                        </DialogTrigger>
-
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Ajouter un sous-groupe</DialogTitle>
-                                            </DialogHeader>
-
-                                            <DialogDescription>
-                                                Ajouter un nouveau sous-groupe à {group.name}
-                                            </DialogDescription>
-
-                                            <form onSubmit={(e) => { void handleAddSubmit((data) => { onAddSubmit(data, group.id); })(e); }}>
-                                                <div className="flex flex-col gap-4 mt-4">
-
-                                                    <Input type="text" {...registerAdd("name", { required: true })} placeholder="Nom du groupe" />
-                                                    
-                                                    <textarea
-                                                        className="border rounded"
-                                                        {...registerAdd("description", { required: true })}
-                                                        placeholder="Description"
-                                                    />
-
-                                                    <DialogClose asChild>
-                                                        <Button type="submit">Valider</Button>
-                                                    </DialogClose>
                                                 </div>
-                                            </form>
-                                        </DialogContent>
-                                    </Dialog>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </ItemActions>
+                                </Item>
 
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button>
-                                                <Trash2 />
-                                            </Button>
-                                        </DialogTrigger>
-
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Supprimer le groupe</DialogTitle>
-                                                <DialogDescription>Cette action est irréversible.</DialogDescription>
-                                            </DialogHeader>
-
-                                            <div className="flex flex-col gap-4 mt-4">
-                                                <DialogClose asChild>
-                                                    <Button variant="destructive" onClick={() => { deleteGroup(index); }}>Supprimer</Button>
-                                                </DialogClose>
-
-                                                <DialogClose asChild>
-                                                    <Button variant="outline">Annuler</Button>
-                                                </DialogClose>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
-                                </ItemActions>
-                            </Item>
-
-                            {index !== groups.length - 1 && <ItemSeparator />}
-                        </div>
-                    );
-                })}
+                                {index !== groups.length - 1 && <ItemSeparator />}
+                            </div>
+                        );
+                    })}
             </ItemGroup>
         </div>
     );
