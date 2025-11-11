@@ -8,7 +8,7 @@ import { Input } from "#/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Label } from "@radix-ui/react-label";
 import { Group } from "@/shared/models/common/group.model";
-import { getAllGroups } from "@/api/admin.api";
+import { getAllGroups, deleteGroupById, addGroup, updateGroup } from "@/api/admin.api";
 import { useReRender } from "@/shared/utils/common/hook.util";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 
@@ -16,20 +16,22 @@ const GroupsComp : FC = (): ReactNode => {
     const { token } = useGeneralVars();
     const [groups, setGroups] = useState<Group[]>([]);
     const [search_term, setSearchTerm] = useState<string>("");
+    const reRender = useReRender();
 
     const { register, handleSubmit, reset } = useForm<IFormInput>();
     const { register: registerEdit, handleSubmit: handleEditSubmit, reset: resetEdit } = useForm<IFormInput>();
     const { register: registerAdd, handleSubmit: handleAddSubmit, reset: resetAdd } = useForm<IAddFormInput>();
 
     useEffect(() => {
-        const reRender = useReRender();
         const unsubscribers: (() => void)[] = [];
 
         unsubscribers.push(token.subscribe(() => { reRender(); }));
 
         console.log("Loaded: GroupsComp");
 
-        getAllGroups(token.current).then(setGroups)
+        getAllGroups(token.current).then((groups) => {
+            setGroups(groups);
+        })
             .catch((err: unknown) => { console.error(err); });
 
         return () => { unsubscribers.forEach((fn) => { fn(); }); };
@@ -40,10 +42,9 @@ const GroupsComp : FC = (): ReactNode => {
     });
 
     const deleteGroup = (id: number) => {
-        // toDo call API to delete group
-        const index = groups.findIndex((group) => { return group.id === id; });
-        groups.splice(index, 1);
-        setGroups([...groups]);
+        deleteGroupById(token.current, id).then(() => { // eslint-disable-line
+            setGroups(groups.filter((group) => { return group.id !== id; }));
+        });
     };
 
     interface IFormInput {
@@ -57,28 +58,23 @@ const GroupsComp : FC = (): ReactNode => {
         description: string;
     }
 
-    const getParentName: (parentId: number | null) => string = (parent_id: number | null) => {
+    const getParentName = (parent_id: number | null) => {
         const parent_group = groups.find((group) => { return group.id === parent_id; });
 
         return parent_group ? parent_group.name : "";
     };
 
-    const onSubmit: SubmitHandler<IFormInput> = (data: IFormInput) => {
-        // toDo call API to add group
-        const new_group: Group = {
-            id         : groups.length + 1,
-            parentId   : null,
-            name       : data.name,
-            description: data.description,
-        };
-        setGroups([...groups, new_group]);
+    const onSubmit: SubmitHandler<IFormInput> = async (data: IFormInput) => {
+        const group = await addGroup(token.current, 1, data.name, data.description);
+        if (!group) return;
+        setGroups([...groups, group]);
         reset();
     };
 
-    const onEditSubmit = (data: IFormInput, index: number) => {
-        // toDo call API to edit group
+    const onEditSubmit = async (data: IFormInput, index: number) => {
         const group_to_edit = groups[index];
         if (!group_to_edit) return;
+        await updateGroup(token.current, group_to_edit.id, data.name, data.description);
         const edited_group: Group = {
             id         : group_to_edit.id,
             parentId   : group_to_edit.parentId,
@@ -90,20 +86,15 @@ const GroupsComp : FC = (): ReactNode => {
         resetEdit();
     };
 
-    const onAddSubmit = (data: IAddFormInput, index: number | null) => {
-        // toDo call API to add subgroup
-        const group: Group = {
-            id         : groups.length + 1,
-            parentId   : index,
-            name       : data.name,
-            description: data.description,
-        };
+    const onAddSubmit = async (data: IAddFormInput, index: number) => {
+        const group = await addGroup(token.current, index, data.name, data.description);
+        if (!group) return;
         setGroups([...groups, group]);
         resetAdd();
     };
 
     return (
-        <div>
+        <div className="mb-15">
             <div id="search">
                 <Label htmlFor="search-input" className="ml-3">Rechercher :</Label>
 
@@ -150,7 +141,7 @@ const GroupsComp : FC = (): ReactNode => {
 
             <h1 className="ml-3 mt-3"><b>Gérer les groupes</b></h1>
 
-            <ItemGroup className="gap-0 max-w-sm">
+            <ItemGroup className="gap-0 max-w-3xl">
                 {groups.toSorted((a: Group, b: Group) => {
                     return a.id - b.id;
                 })
@@ -159,13 +150,13 @@ const GroupsComp : FC = (): ReactNode => {
                     })
                     .map((group: Group, index: number) => {
                         return (
-                            <div key={index}>
+                            <div key={group.id}>
                                 <Item className="h-fit">
                                     <ItemContent>
                                         <ItemTitle>{group.id}. {group.name}</ItemTitle>
                                     
                                         <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
-                                        {group.parentId && `Sous-groupe de ${group.parentId}. ${getParentName(group.parentId)}\n` /* eslint-disable-line*/ }
+                                        {group.parentId != -1 && `Sous-groupe de ${group.parentId}. ${getParentName(group.parentId)}\n` /* eslint-disable-line*/ }
                                             {group.description}
                                         </ItemDescription>
                                     </ItemContent>
@@ -190,7 +181,12 @@ const GroupsComp : FC = (): ReactNode => {
                                                 </DialogHeader>
 
                                                 <div className="flex flex-col gap-4 mt-4">
-                                                    <form onSubmit={(e) => { void handleEditSubmit((data) => { onEditSubmit(data, index); })(e); }}>
+                                                    <form onSubmit={(e) => {
+                                                        void handleEditSubmit((data) => {
+                                                            void onEditSubmit(data, index);
+                                                        })(e);
+                                                    }}
+                                                    >
                                                         <Label>Nom</Label>
 
                                                         <Input
@@ -238,7 +234,7 @@ const GroupsComp : FC = (): ReactNode => {
                                                     Ajouter un nouveau sous-groupe à {group.name}
                                                 </DialogDescription>
 
-                                                <form onSubmit={(e) => { void handleAddSubmit((data) => { onAddSubmit(data, group.id); })(e); }}>
+                                                <form onSubmit={(e) => { void handleAddSubmit((data) => { void onAddSubmit(data, group.id); })(e); }}>
                                                     <div className="flex flex-col gap-4 mt-4">
 
                                                         <Input type="text" {...registerAdd("name", { required: true })} placeholder="Nom du groupe" />
