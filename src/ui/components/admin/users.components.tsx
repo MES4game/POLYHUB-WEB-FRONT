@@ -27,7 +27,6 @@ const UsersComp : FC = (): ReactNode => {
         unsubscribers.push(is_admin.subscribe(() => { reRender(); }));
 
         getAllUsers(token.current).then((users) => {
-            console.log("Fetched users:", users);
             setUsers(users);
         })
             .catch((err: unknown) => { console.error(err); });
