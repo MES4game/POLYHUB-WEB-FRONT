@@ -6,7 +6,7 @@ import {
     TabsTrigger,
 } from "#/components/ui/tabs";
 import UsersComp from "@/ui/components/admin/users.components";
-import AdminEDTComp from "@/ui/components/admin/edt.component";
+import AdminEDTComp from "@/ui/components/admin/edt/edt.component";
 import LessonsComp from "@/ui/components/admin/lessons.component";
 import GroupsComp from "@/ui/components/admin/groups.components";
 import RoomsComp from "@/ui/components/admin/rooms.component";

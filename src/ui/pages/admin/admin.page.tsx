@@ -4,7 +4,7 @@ import AdminTabsComp from "@/ui/components/admin/adminTabs.component";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { useReRender } from "@/shared/utils/common/hook.util";
 import { Link } from "react-router-dom";
-import NavbarComp from "@/ui/components/home/navbar/navbar.component";
+import NavbarComp from "@/ui/components/admin/navbar/navbar.component";
 
 
 const AdminPage: FC = (): ReactNode => {
