@@ -2,8 +2,14 @@ import { FC, ReactNode, useEffect } from "react";
 import "@/ui/components/home/navbar/navbar.component.css";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "#/components/ui/avatar";
+import FormatButtonsComp, { CalendarFormat } from "@/ui/components/home/navbar/Format/formatButtons.component";
 
-const NavbarComp: FC = (): ReactNode => {
+interface NavbarCompProps {
+    calendarformat: CalendarFormat;
+    onFormatChange: (format: CalendarFormat) => void;
+}
+
+const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): ReactNode => {
     useEffect(() => {
         console.log("Loaded: NavbarComp");
     }, []);
@@ -15,6 +21,11 @@ const NavbarComp: FC = (): ReactNode => {
     return (
         <header id="navbar">
             <p>PolyHUB</p>
+            
+            <FormatButtonsComp
+                value={calendarformat}
+                onValueChange={onFormatChange}
+            />
             
             <Link to="/login">
                 <Avatar>

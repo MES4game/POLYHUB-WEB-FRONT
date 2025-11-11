@@ -8,4 +8,5 @@
     background-color: #fafafa;
     border-right: 1px solid #e5e7eb;
     overflow-y: auto;
+    min-width: 220px;
 }
