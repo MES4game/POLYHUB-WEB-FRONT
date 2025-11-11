@@ -1,11 +1,14 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import "@/ui/pages/home/home.page.css";
 import NavbarComp from "@/ui/components/home/navbar/navbar.component";
 import CalendarComp from "@/ui/components/home/calendar/calendar.component";
 import SidebarComp from "@/ui/components/home/sidebar/sidebar.component";
+import { CalendarFormat } from "@/ui/components/home/navbar/Format/formatButtons.component";
 
 
 const HomePage: FC = (): ReactNode => {
+    const [calendarformat, setCalendarFormat] = useState<CalendarFormat>("week");
+
     useEffect(() => {
         console.log("Loaded: HomePage");
     }, []);
@@ -16,9 +19,13 @@ const HomePage: FC = (): ReactNode => {
 
     return (
         <div id="home-page">
-            <NavbarComp />
+            <NavbarComp
+                calendarformat={calendarformat}
+                onFormatChange={setCalendarFormat}
+            />
+
             <SidebarComp />
-            <CalendarComp />
+            <CalendarComp calendarformat={calendarformat} />
         </div>
     );
 };
