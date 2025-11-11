@@ -8,8 +8,12 @@ import { Input } from "#/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Label } from "@radix-ui/react-label";
 import { Group } from "@/shared/models/common/group.model";
+import { getAllGroups } from "@/api/admin.api";
+import { useReRender } from "@/shared/utils/common/hook.util";
+import { useGeneralVars } from "@/shared/contexts/common/general.context";
 
 const GroupsComp : FC = (): ReactNode => {
+    const { token } = useGeneralVars();
     const [groups, setGroups] = useState<Group[]>([]);
     const [search_term, setSearchTerm] = useState<string>("");
 
@@ -18,23 +22,17 @@ const GroupsComp : FC = (): ReactNode => {
     const { register: registerAdd, handleSubmit: handleAddSubmit, reset: resetAdd } = useForm<IAddFormInput>();
 
     useEffect(() => {
-        // toDo call API to init groups
+        const reRender = useReRender();
+        const unsubscribers: (() => void)[] = [];
+
+        unsubscribers.push(token.subscribe(() => { reRender(); }));
+
         console.log("Loaded: GroupsComp");
-        const groups_test: Group[] = [
-            {
-                id         : 1,
-                parentId   : null,
-                name       : "PeiP1",
-                description: "PeiP1",
-            },
-            {
-                id         : 2,
-                parentId   : null,
-                name       : "PeiP2",
-                description: "PeiP2",
-            },
-        ];
-        setGroups(groups_test);
+
+        getAllGroups(token.current).then(setGroups)
+            .catch((err: unknown) => { console.error(err); });
+
+        return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
 
     useEffect(() => {
