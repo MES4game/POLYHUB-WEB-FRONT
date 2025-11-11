@@ -33,9 +33,10 @@ export const FiltersBoxComp = () => {
             title       : "Mathématiques Avancées",
             start_time  : "08:00",
             end_time    : "10:00",
-            location    : "Salle A101",
-            professor   : "Prof. Dubois",
+            location    : ["Salle A101"],
+            professor   : ["Prof. Dubois"],
             category    : "Math",
+            group       : [],
             color       : "blue",
             is_following: true,
         },
@@ -44,16 +45,17 @@ export const FiltersBoxComp = () => {
             title       : "Programmation Web",
             start_time  : "10:15",
             end_time    : "12:15",
-            location    : "Salle B203",
-            professor   : "Prof. Martin",
+            location    : ["Salle B203"],
+            professor   : ["Prof. Martin"],
             category    : "Informatique",
+            group       : [],
             color       : "orange",
             is_following: false,
         },
     ];
 
     return (
-        <div className="w-full h-full flex items-start justify-center px-4 pt-2 pb-4 overflow-hidden">
+        <div className="w-full h-full flex items-start justify-center px-4 pb-4 overflow-hidden">
             <div className="w-full max-w-sm h-full rounded-lg border shadow-md bg-white p-4 flex flex-col overflow-hidden">
                 <BoxHeaderComp activeview={active_view} onViewChange={setActiveView} />
                 

@@ -163,19 +163,19 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
 
                                             {event.location.length > 0 && (
                                                 <div className="calendar-event-location">
-                                                    📍 {event.location.join(", ")}
+                                                    {event.location.join(", ")}
                                                 </div>
                                             )}
 
                                             {event.professor.length > 0 && (
                                                 <div className="calendar-event-professor">
-                                                    👤 {event.professor.join(", ")}
+                                                    {event.professor.join(", ")}
                                                 </div>
                                             )}
 
                                             {event.group.length > 0 && (
                                                 <div className="calendar-event-group">
-                                                    👥 {event.group.join(", ")}
+                                                    {event.group.join(", ")}
                                                 </div>
                                             )}
                                         </div>
