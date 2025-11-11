@@ -25,14 +25,12 @@ const UsersComp : FC = (): ReactNode => {
 
         unsubscribers.push(token.subscribe(() => { reRender(); }));
         unsubscribers.push(is_admin.subscribe(() => { reRender(); }));
-        getAllUsers(token.current).then((users) => { setUsers(users); });
 
-        Promise.all(users.map(async (user) => { // eslint-disable-line
-            const is_teacher = await getIsTeacher(token.current, user.id);
-            const is_modo = await getIsModo(token.current, user.id);
-
-            return { user, is_teacher: is_teacher, is_modo: is_modo };
-        })).then(setUsersRoles);
+        getAllUsers(token.current).then((users) => {
+            console.log("Fetched users:", users);
+            setUsers(users);
+        })
+            .catch((err: unknown) => { console.error(err); });
 
         return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
@@ -40,6 +38,15 @@ const UsersComp : FC = (): ReactNode => {
     useEffect(() => {
         console.log("Rendered: UsersComp");
     });
+
+    useEffect(() => {
+        Promise.all(users.map(async (user) => { // eslint-disable-line
+            const is_teacher = await getIsTeacher(token.current, user.id);
+            const is_modo = await getIsModo(token.current, user.id);
+
+            return { user, is_teacher: is_teacher, is_modo: is_modo };
+        })).then(setUsersRoles);
+    }, [users]);
 
     return (
         <div>
@@ -84,7 +91,7 @@ const UsersComp : FC = (): ReactNode => {
                         <div key={user.id}>
                             <Item className="h-fit">
                                 <ItemContent>
-                                    <ItemTitle>{user.id}. {user.lastname} {user.firstname}</ItemTitle>
+                                    <ItemTitle>{user.pseudo} ({user.lastname} {user.firstname})</ItemTitle>
                                     
                                     <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
                                         {user.email}
