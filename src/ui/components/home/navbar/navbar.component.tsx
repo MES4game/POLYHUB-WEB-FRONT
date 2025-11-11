@@ -14,7 +14,7 @@ const NavbarComp: FC = (): ReactNode => {
 
     return (
         <header id="navbar">
-            <p>PolyHUB</p>
+            <Link to="/">PolyHUB</Link>
             
             <Link to="/login">
                 <Avatar>

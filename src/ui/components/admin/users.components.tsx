@@ -7,12 +7,16 @@ import { Label } from "#/components/ui/label";
 import { getIsTeacher, getIsModo, setIsTeacher, setIsModo } from "@/api/user.api";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { useReRender } from "@/shared/utils/common/hook.util";
+import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group";
 
 const UsersComp : FC = (): ReactNode => {
     const { is_admin } = useGeneralVars();
     const [users, setUsers] = useState<User[]>([]);
     const [users_roles, setUsersRoles] = useState<{ user: User; is_teacher: boolean; is_modo: boolean }[]>([]);
     const reRender = useReRender();
+    const [search_term, setSearchTerm] = useState<string>("");
+    const [modo_only, setModoOnly] = useState<boolean>(false);
+    const [teacher_only, setTeacherOnly] = useState<boolean>(false);
 
     useEffect(() => {
         console.log("Loaded: UsersComp");
@@ -67,10 +71,43 @@ const UsersComp : FC = (): ReactNode => {
 
     return (
         <div>
+            <div id="search">
+                <Label htmlFor="search-input" className="ml-3">Rechercher :</Label>
+
+                <Input
+                    type="text"
+                    placeholder="Rechercher un utilisateur..."
+                    value={search_term}
+                    onChange={(e) => { setSearchTerm(e.target.value); }}
+                    className="ml-3 mb-3 w-64"
+                />
+
+                <br />
+
+                <ToggleGroup type="multiple" variant="outline" className="flex justify-start">
+                    <ToggleGroupItem value="teacher" onClick={() => { setTeacherOnly(!teacher_only); }}>
+                        Intervenants uniquement
+                    </ToggleGroupItem>
+
+                    {is_admin.current && (
+                        <ToggleGroupItem value="modo" onClick={() => { setModoOnly(!modo_only); }}>
+                            Modérateurs uniquement
+                        </ToggleGroupItem>
+                    )}
+                </ToggleGroup>
+            </div>
+
             <h1 className="ml-3 mt-3"><b>Gérer les utilisateurs</b></h1>
 
             <ItemGroup className="max-w-3xl mt-6">
-                {users_roles.map(({ user, is_teacher, is_modo }, index: number) => {
+                {users_roles.filter((user) => {
+                    const fullname = `${user.user.firstname} ${user.user.lastname}`;
+
+                    return (user.user.firstname.toLowerCase().includes(search_term.toLowerCase())
+                        || user.user.lastname.toLowerCase().includes(search_term.toLowerCase())
+                        || fullname.toLowerCase().includes(search_term.toLowerCase()))
+                    && ((!teacher_only || user.is_teacher) && (!modo_only || user.is_modo));
+                }).map(({ user, is_teacher, is_modo }, index: number) => {
                     return (
                         <div key={user.id}>
                             <Item className="h-fit">
