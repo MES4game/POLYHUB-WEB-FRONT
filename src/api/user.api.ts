@@ -50,9 +50,33 @@ export async function getIsTeacher(token: string, user_id: number): Promise<bool
     return false;
 }
 
-export async function setIsTeacher(_user_id: number, _is_teacher: boolean): Promise<void> {
-    // Just to remove error from linter of no await inside an async function
-    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+export async function setIsTeacher(_token: string, user_id: number, is_teacher: boolean): Promise<void> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzYyODgyMjI2LCJleHAiOjE3NjI5MDM4MjYsImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjMifQ.bI0-zXa50wOLJG0JavKkfb-5wWqmb27ejogyGKGYos4H_ZEysBaUyliGZIk6BuXkaKfF6hEwYeh6I5V4KgxiEQ";  // eslint-disable-line
+    
+    if (is_teacher) {
+        await fetch(
+            `${ENV.api_url}/role/link/teacher/user/${user_id.toString()}`,
+            {
+                method : "POST",
+                headers: {
+                    Authorization : `Bearer ${token}`, // eslint-disable-line
+                    "Content-Type": "application/json", // eslint-disable-line
+                },
+            },
+        );
+    }
+    else {
+        await fetch(
+            `${ENV.api_url}/role/link/teacher/user/${user_id.toString()}`,
+            {
+                method : "DELETE",
+                headers: {
+                    Authorization : `Bearer ${token}`, // eslint-disable-line
+                    "Content-Type": "application/json", // eslint-disable-line
+                },
+            },
+        );
+    }
 
     return;
 }
@@ -78,9 +102,33 @@ export async function getIsModo(token: string, user_id: number): Promise<boolean
     return false;
 }
 
-export async function setIsModo(_user_id: number, _is_moderator: boolean): Promise<void> {
-    // Just to remove error from linter of no await inside an async function
-    await fetch("https://data.bde-pps.fr/bde/images/logo/bde.svg");
+export async function setIsModo(_token: string, user_id: number, is_moderator: boolean): Promise<void> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODg3OTMzLCJleHAiOjE3NjI5MDk1MzMsImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.e3NhZt4Z07aouSAgBpPDMpgp-xZrsaG6C68nmZ2vxsgey0El2prQhPVQniDkL87zzw7AxSxprsIEyysFRfTfag";  // eslint-disable-line
+    
+    if (is_moderator) {
+        await fetch(
+            `${ENV.api_url}/role/link/moderator/user/${user_id.toString()}`,
+            {
+                method : "POST",
+                headers: {
+                    Authorization : `Bearer ${token}`, // eslint-disable-line
+                    "Content-Type": "application/json", // eslint-disable-line
+                },
+            },
+        );
+    }
+    else {
+        await fetch(
+            `${ENV.api_url}/role/link/moderator/user/${user_id.toString()}`,
+            {
+                method : "DELETE",
+                headers: {
+                    Authorization : `Bearer ${token}`, // eslint-disable-line
+                    "Content-Type": "application/json", // eslint-disable-line
+                },
+            },
+        );
+    }
 
     return;
 }

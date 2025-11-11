@@ -107,13 +107,13 @@ const UsersComp : FC = (): ReactNode => {
                                             checked={is_teacher}
                                             className="h-full"
                                             onChange={() => {
-                                                void setIsTeacher(user.id, !is_teacher);
-
-                                                setUsersRoles((prev) => {
-                                                    return prev.map((role) => {
-                                                        return role.user.id === user.id
-                                                            ? { ...role, is_teacher: !is_teacher }
-                                                            : role;
+                                                setIsTeacher(token.current, user.id, !is_teacher).then(() => {
+                                                    setUsersRoles((prev) => {
+                                                        return prev.map((role) => {
+                                                            return role.user.id === user.id
+                                                                ? { ...role, is_teacher: !is_teacher }
+                                                                : role;
+                                                        });
                                                     });
                                                 });
                                             }}
@@ -128,13 +128,13 @@ const UsersComp : FC = (): ReactNode => {
                                                     checked={is_modo}
                                                     className="h-full"
                                                     onChange={() => {
-                                                        void setIsModo(user.id, !is_modo);
-
-                                                        setUsersRoles((prev) => {
-                                                            return prev.map((role) => {
-                                                                return role.user.id === user.id
-                                                                    ? { ...role, is_modo: !is_modo }
-                                                                    : role;
+                                                        setIsModo(token.current, user.id, !is_modo).then(() => {
+                                                            setUsersRoles((prev) => {
+                                                                return prev.map((role) => {
+                                                                    return role.user.id === user.id
+                                                                        ? { ...role, is_modo: !is_modo }
+                                                                        : role;
+                                                                });
                                                             });
                                                         });
                                                     }}
