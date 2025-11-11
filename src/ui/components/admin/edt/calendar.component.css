@@ -1,0 +1,32 @@
+#calendar {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.calendar-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+@media (max-width: 768px) {
+    #calendar {
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    #calendar {
+        padding: 2px;
+    }
+}
+
