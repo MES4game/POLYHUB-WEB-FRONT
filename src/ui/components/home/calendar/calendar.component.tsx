@@ -4,6 +4,8 @@ import { CalendarFormat } from "@/ui/components/home/navbar/Format/formatButtons
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { EventModel } from "@/shared/models/event.model";
 import WeekView from "@/ui/components/home/calendar/weekView.component";
+import DayView from "@/ui/components/home/calendar/dayView.component";
+import MonthView from "@/ui/components/home/calendar/monthView.component";
 
 interface CalendarCompProps {
     calendarformat: CalendarFormat;
@@ -13,7 +15,6 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
     const { selecteddate } = useGeneralVars();
     const [currentdate, setCurrentDate] = useState<Date | undefined>(selecteddate.current);
     
-    // Mock events - replace with actual data from API
     const [events] = useState<EventModel[]>([
         {
             id          : "1",
@@ -53,23 +54,14 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
         );
     }
 
-    // Render different views based on calendar format
     const renderView = () => {
         switch (calendarformat) {
             case "week":
                 return <WeekView selecteddate={currentdate} events={events} />;
             case "day":
-                return (
-                    <div className="calendar-content">
-                        <p>Vue journalière (à implémenter)</p>
-                    </div>
-                );
+                return <DayView selecteddate={currentdate} events={events} />;
             case "month":
-                return (
-                    <div className="calendar-content">
-                        <p>Vue mensuelle (à implémenter)</p>
-                    </div>
-                );
+                return <MonthView selecteddate={currentdate} events={events} />;
             default:
                 return <WeekView selecteddate={currentdate} events={events} />;
         }

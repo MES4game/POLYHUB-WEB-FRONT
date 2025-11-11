@@ -17,7 +17,7 @@
     align-items: center;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
     #calendar {
         padding: 5px;

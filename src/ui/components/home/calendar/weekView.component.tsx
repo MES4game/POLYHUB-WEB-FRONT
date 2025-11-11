@@ -2,14 +2,12 @@ import { FC, ReactNode, useMemo } from "react";
 import "@/ui/components/home/calendar/weekView.component.css";
 import { EventModel, EVENT_COLOR_UTILS } from "@/shared/models/event.model";
 
-// The date selected in the daySelector
 interface WeekViewProps {
     selecteddate: Date;
     events?     : EventModel[];
 }
 
 const WeekViewComp: FC<WeekViewProps> = ({ selecteddate, events = [] }): ReactNode => {
-    // Current date is always today - used to highlight the current day
     const currentdate = useMemo(
         () => { return new Date(); },
         [],
@@ -35,7 +33,6 @@ const WeekViewComp: FC<WeekViewProps> = ({ selecteddate, events = [] }): ReactNo
     const weekevents = useMemo(() => {
         const eventsmap: Record<string, EventModel[]> = {};
         
-        // Helper function to get local date string (YYYY-MM-DD)
         const getLocalDateKey = (date: Date): string => {
             const year = date.getFullYear();
             const month = (date.getMonth() + 1)
