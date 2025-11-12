@@ -32,14 +32,15 @@ const LoginFormComp: FC = (): ReactNode => {
     const context = useGeneralVars();
     const { register, handleSubmit, reset: _reset } = useForm<IFormInput>();
 
-    const handleLogin: SubmitHandler<IFormInput> = async (data) => {
-        try {
-            context.token.current = (await loginUser(data.login, data.password)).token;
+    const handleLogin: SubmitHandler<IFormInput> = async (data) => { // eslint-disable-line
+        loginUser(data.login, data.password).then((res) => {
+            context.token.current = res.token;
+            console.log("Login successful, token set.");
             window.location.href = "/";
-        }
-        catch(_error:unknown) {
-            alert("Connexion échouée. Veuillez vérifier vos identifiants.");
-        }
+        })
+            .catch((_error: unknown) => {
+                alert("Connexion échouée, vérifiez vos identifiants.");
+            });
     };
 
     useEffect(() => {

@@ -1,12 +1,6 @@
 import { User, mapUser } from "@/shared/models/user.model";
 import { ENV } from "@/shared/config/env.config";
 
-const USERS: User[] = [
-    { id: 1, pseudo: "", email: "", firstname: "", lastname: "", created_on: new Date(), last_connection: new Date(), deleted_on: new Date(0), verified_email: false }, // eslint-disable-line
-    { id: 2, pseudo: "", email: "", firstname: "", lastname: "", created_on: new Date(), last_connection: new Date(), deleted_on: new Date(0), verified_email: false }, // eslint-disable-line
-    { id: 3, pseudo: "", email: "", firstname: "", lastname: "", created_on: new Date(), last_connection: new Date(), deleted_on: new Date(0), verified_email: false }, // eslint-disable-line
-];
-
 export async function getSelf(token: string): Promise<User> {
     const response = await fetch(
         `${ENV.api_url}/user/self`,
@@ -25,7 +19,7 @@ export async function getSelf(token: string): Promise<User> {
         return mapUser(data);
     }
 
-    return mapUser(USERS[0]);
+    throw new ReferenceError("Failed to fetch self user data");
 }
 
 export async function getSelfIsAdmin(token: string): Promise<boolean> {

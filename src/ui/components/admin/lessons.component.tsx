@@ -8,29 +8,25 @@ import { Input } from "#/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Label } from "@radix-ui/react-label";
 import { Lesson } from "@/shared/models/common/lesson.model";
+import { getLessons } from "@/api/admin.api";
+import { useGeneralVars } from "@/shared/contexts/common/general.context";
 
 const LessonsComp : FC = (): ReactNode => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
+    const { token } = useGeneralVars();
     
     const { register, handleSubmit, reset } = useForm<IFormInput>();
     const { register: registerEdit, handleSubmit: handleEditSubmit, reset: resetEdit } = useForm<IFormInput>();
 
     useEffect(() => {
-        // toDo call API to init lessons
         console.log("Loaded: LessonsComp");
-        const lessons_test: Lesson[] = [
-            {
-                id         : 1,
-                name       : "Mathématiques 1",
-                description: "Mathématiques S1 PeiP1",
-            },
-            {
-                id         : 2,
-                name       : "Mathématiques 2",
-                description: "Mathématiques S2 PeiP2",
-            },
-        ];
-        setLessons(lessons_test);
+        
+        getLessons(token.current).then((lessons) => {
+            setLessons(lessons);
+        })
+            .catch((error: unknown) => {
+                console.error(error);
+            });
     }, []);
 
     useEffect(() => {
