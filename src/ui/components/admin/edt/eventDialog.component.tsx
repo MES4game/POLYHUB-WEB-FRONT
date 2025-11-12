@@ -140,8 +140,8 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
 
                 setAllGroups(formatted_groups);
 
-                // Filter groups with parentId = -1 to get promos
-                const promo_groups = all_groups.filter((group) => { return group.parentId === -1; });
+                // Filter groups with parentId = 0 to get promos
+                const promo_groups = all_groups.filter((group) => { return group.parentId === 0; });
                 const formatted_promos = promo_groups.map((group) => {
                     return {
                         value: group.id.toString(),
