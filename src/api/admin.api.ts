@@ -317,9 +317,7 @@ export async function getLessonsByGroupId(_token:string, group_id:number): Promi
     return [];
 }
 
-export async function getLessons(_token:string): Promise<Lesson[]> {
-    // eslint-disable-next-line @stylistic/max-len
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";
+export async function getLessons(token:string): Promise<Lesson[]> {
     const response = await fetch(
         `${ENV.api_url}/lesson/all`,
         {
@@ -335,11 +333,89 @@ export async function getLessons(_token:string): Promise<Lesson[]> {
         const data = await response.json(); // eslint-disable-line
 
         return data.map((lt: any) => { // eslint-disable-line
-            const lesson = { id: lt.id, name: lt.name, description: lt.description };  // eslint-disable-line
+            const lesson = { id: lt.id, name: lt.name, description: lt.description, color: lt.color };  // eslint-disable-line
             return mapLesson(lesson); }); // eslint-disable-line
     }
 
     return [];
+}
+
+export async function addLesson(token: string, name: string, description: string, color = "#3B82F6"): Promise<Lesson | null> {
+    const response = await fetch(
+        `${ENV.api_url}/lesson/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                name       : name,
+                description: description,
+                color      : color,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+        const lesson = { color: color, id: data.id, name: data.name, description: data.description };  // eslint-disable-line
+        return mapLesson(lesson); // eslint-disable-line
+    }
+    else {
+        const error = await response.json(); // eslint-disable-line
+
+        console.error(error);
+    }
+
+    return null;
+}
+
+export async function updateLesson(token: string, lesson_id: number, name: string, description: string): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/lesson/name`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_name : name,
+                lesson_id: lesson_id,
+            }),
+        },
+    );
+
+    await fetch(
+        `${ENV.api_url}/lesson/description`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_description: description,
+                lesson_id      : lesson_id,
+            }),
+        },
+    );
+
+    return;
+}
+
+export async function deleteLessonById(token: string, lesson_id: number): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/lesson/delete/${lesson_id.toString()}`,
+        {
+            method : "DELETE",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
 }
 
 // Post Event
@@ -587,9 +663,9 @@ export async function getLessonById(token:string, lesson_id:number): Promise<Les
     );
 
     if (response.ok) {
-        const data = await response.json() as Lesson;
+        const data = await response.json() as unknown;
 
-        return data;
+        return mapLesson(data);
     }
 
     throw new Error("Failed to fetch lesson");

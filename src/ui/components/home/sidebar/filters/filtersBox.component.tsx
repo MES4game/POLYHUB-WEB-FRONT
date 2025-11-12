@@ -90,20 +90,9 @@ export const FiltersBoxComp = () => {
     const [events, setEvents] = React.useState<EventModel[]>([]);
     const [is_loading, setIsLoading] = React.useState(true);
 
-    const { selecteddate, token } = useGeneralVars();
+    const { token } = useGeneralVars();
     const { applied_groups } = useFilters();
-    const [current_date, setCurrentDate] = React.useState<Date>(selecteddate.current ?? new Date());
-
-    // Subscribe to selected date changes
-    React.useEffect(() => {
-        const unsubscribe = selecteddate.subscribe((_, new_date) => {
-            if (new_date) {
-                setCurrentDate(new_date);
-            }
-        });
-
-        return unsubscribe;
-    }, [selecteddate]);
+    const [current_date] = React.useState<Date>(new Date());
 
     // Fetch events from API
     React.useEffect(() => {
