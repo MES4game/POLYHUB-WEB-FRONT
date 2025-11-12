@@ -64,14 +64,22 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
                                     <li><Link to="/register">Inscription</Link></li>
                                 </>
                             )}
+
                             {token.current && (
                                 <>
-                                    <li><Link to="/login" onClick={() => {
-                                        handleDisconnect();
-                                    }}>Se déconnecter</Link></li>
-                                    {(is_admin.current || is_modo.current) && (
-                                        <li><Link to="/admin">Page administrateur</Link></li>
-                                    )}
+                                    <li>
+                                        <Link
+                                            to="/login"
+                                            onClick={() => {
+                                                handleDisconnect();
+                                            }}
+                                        >
+                                            Se déconnecter
+                                        </Link>
+                                    </li>
+
+                                    {(is_admin.current || is_modo.current)
+                                        && <li><Link to="/admin">Page administrateur</Link></li>}
                                 </>
                             )}
                         </ul>
