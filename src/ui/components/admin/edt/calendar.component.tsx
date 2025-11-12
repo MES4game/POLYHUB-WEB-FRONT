@@ -15,6 +15,8 @@ import {
     getRoomById,
     getBuildingById,
     getUserNameById,
+    getGroupsByLessonId,
+    getGroupById,
 } from "@/api/admin.api";
 
 interface CalendarCompProps {
@@ -42,16 +44,34 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                     raw_events.map(async (event) => {
                         try {
                             // Fetch related data in parallel
-                            const [rooms_ids_raw, teachers_ids_raw, lesson_type, lesson] = await Promise.all([
-                                getRoomsByEventId(token.current, parseInt(event.id, 10)).catch(() => { return []; }),
-                                getTeachersByEventId(token.current, parseInt(event.id, 10)).catch(() => { return []; }),
+                            const [rooms_ids_raw, teachers_ids_raw, lesson_type, lesson, groups_ids_raw] = await Promise.all([
+                                getRoomsByEventId(token.current, parseInt(event.id, 10)).catch((err: unknown) => {
+                                    console.error(`Error fetching rooms for event ${event.id}:`, err);
+
+                                    return [];
+                                }),
+                                getTeachersByEventId(token.current, parseInt(event.id, 10)).catch((err: unknown) => {
+                                    console.error(`Error fetching teachers for event ${event.id}:`, err);
+
+                                    return [];
+                                }),
                                 getLessonTypeById(token.current, event.lesson_type_id).catch(() => { return null; }),
                                 getLessonById(token.current, event.lesson_id).catch(() => { return null; }),
+                                getGroupsByLessonId(token.current, event.lesson_id, event.lesson_type_id, event.lesson_arg).catch((err: unknown) => {
+                                    console.error(`Error fetching groups for event ${event.id}:`, err);
+
+                                    return [];
+                                }),
                             ]);
 
                             // Ensure we have arrays (handle API returning non-array values)
                             const rooms_ids = Array.isArray(rooms_ids_raw) ? rooms_ids_raw : [];
                             const teachers_ids = Array.isArray(teachers_ids_raw) ? teachers_ids_raw : [];
+                            const groups_ids = Array.isArray(groups_ids_raw) ? groups_ids_raw : [];
+
+                            console.log(`Event ${event.id} - Room IDs:`, rooms_ids);
+                            console.log(`Event ${event.id} - Teacher IDs:`, teachers_ids);
+                            console.log(`Event ${event.id} - Group IDs:`, groups_ids);
 
                             // Fetch room details
                             const rooms = await Promise.all(
@@ -62,6 +82,8 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                                         if (room) {
                                             try {
                                                 const building = await getBuildingById(token.current, room.building_id);
+                                                
+                                                console.log(`Fetched building ${building?.name ?? "unknown"} for room ${room.name}`);
 
                                                 return building ? `${building.name} - ${room.name}` : room.name;
                                             }
@@ -81,6 +103,8 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                                     }
                                 }),
                             );
+
+                            console.log(`Event ${event.id} - Fetched rooms:`, rooms);
 
                             // Fetch teacher names
                             const teachers = await Promise.all(
@@ -102,13 +126,32 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                                 }),
                             );
 
+                            // Fetch group names
+                            const groups = await Promise.all(
+                                groups_ids.map(async (group_id) => {
+                                    try {
+                                        const group = await getGroupById(token.current, group_id);
+
+                                        if (group) {
+                                            return group.name;
+                                        }
+
+                                        return `Group ${String(group_id)}`;
+                                    }
+                                    catch(group_error) {
+                                        console.error(`Error fetching group ${String(group_id)}:`, group_error);
+
+                                        return `Group ${String(group_id)}`;
+                                    }
+                                }),
+                            );
+
+                            console.log(`Event ${event.id} - Fetched groups:`, groups);
+
                             // Default color, could be based on lesson_type
                             const color: EventColor = "blue";
 
-                            // Placeholder - groupe getters missing
-                            const group_placeholder = ["ET4 INFO"];
-
-                            return {
+                            const final_event = {
                                 id          : event.id,
                                 title       : lesson?.name ?? `Lesson ${String(event.lesson_id)}`,
                                 start_time  : event.start.toISOString(),
@@ -116,11 +159,16 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                                 location    : rooms,
                                 professor   : teachers,
                                 category    : lesson_type?.name ?? `Type ${String(event.lesson_type_id)}`,
-                                group       : group_placeholder,
+                                group       : groups.length > 0 ? groups : ["No group"],
                                 sub_group   : event.lesson_arg,
                                 color,
                                 is_following: true,
                             } as EventModel;
+
+                            console.log(`Event ${event.id} - Final event:`, final_event);
+                            console.log(`Event ${event.id} - Location array:`, final_event.location);
+
+                            return final_event;
                         }
                         catch(error) {
                             console.error(`Error transforming event ${event.id}:`, error);
@@ -134,7 +182,7 @@ const CalendarComp: FC<CalendarCompProps> = ({ calendarformat }): ReactNode => {
                                 location    : [],
                                 professor   : [],
                                 category    : "Unknown",
-                                group       : ["ET4 INFO"],
+                                group       : ["Unknown"],
                                 sub_group   : event.lesson_arg,
                                 color       : "blue" as EventColor,
                                 is_following: false,

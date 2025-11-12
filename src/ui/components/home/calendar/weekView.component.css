@@ -190,8 +190,8 @@
 
 .calendar-event-card {
     position: absolute;
-    left: 4px;
-    right: 4px;
+    padding: 0 2px;
+    box-sizing: border-box;
     border-radius: 6px;
     overflow: hidden;
     cursor: pointer;
@@ -215,19 +215,37 @@
 .calendar-event-content {
     flex: 1;
     padding: 6px 8px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.calendar-event-content::-webkit-scrollbar {
+    width: 3px;
+}
+
+.calendar-event-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.calendar-event-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+
+.calendar-event-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .calendar-event-title {
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1.2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
 }
 
 .calendar-event-time {
@@ -240,33 +258,25 @@
     font-size: 0.7rem;
     color: #6b7280;
     font-style: italic;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
 }
 
 .calendar-event-location {
     font-size: 0.75rem;
     color: #6b7280;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
 }
 
 .calendar-event-professor {
     font-size: 0.75rem;
     color: #6b7280;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
 }
 
 .calendar-event-group {
     font-size: 0.7rem;
     color: #6b7280;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-wrap: break-word;
 }
 
 

@@ -159,6 +159,9 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
                                 const overlapping_events = getOverlappingEvents(event);
                                 const position = getEventPosition(event, overlapping_events);
 
+                                // Debug: Log event data
+                                console.log("Rendering event:", event.id, "Location:", event.location, "Location length:", event.location.length);
+
                                 return (
                                     <div
                                         key={event.id}

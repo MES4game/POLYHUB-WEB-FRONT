@@ -445,9 +445,9 @@ export async function linkRoomToEvent(token: string, event_id: number, room_id: 
     }
 }
 
-export async function linkTeacherToEvent(token: string, group_id: number, teacher_id: number): Promise<void> {
+export async function linkTeacherToEvent(token: string, event_id: number, teacher_id: number): Promise<void> {
     const response = await fetch(
-        `${ENV.api_url}/group/link/${group_id.toString()}/user/${teacher_id.toString()}`,
+        `${ENV.api_url}/event/link/${event_id.toString()}/user/${teacher_id.toString()}`,
         {
             method : "POST",
             headers: {
@@ -515,9 +515,14 @@ export async function getTeachersByEventId(token: string, event_id: number): Pro
     );
 
     if (response.ok) {
-        const data = await response.json() as number[];
+        const data = await response.json() as { users: number[] } | number[];
 
-        return data;
+        // Handle both formats: {users: [...]} or just [...]
+        if (typeof data === "object" && "users" in data) {
+            return data.users;
+        }
+
+        return Array.isArray(data) ? data : [];
     }
 
     throw new Error("Failed to fetch teachers for event");
@@ -536,9 +541,13 @@ export async function getRoomsByEventId(token: string, event_id: number): Promis
     );
 
     if (response.ok) {
-        const data = await response.json() as number[];
+        const data = await response.json() as { rooms: number[] } | number[];
 
-        return data;
+        if (typeof data === "object" && "rooms" in data) {
+            return data.rooms;
+        }
+
+        return Array.isArray(data) ? data : [];
     }
 
     throw new Error("Failed to fetch rooms for event");
@@ -641,11 +650,68 @@ export async function getUserNameById(token:string, user_id:number): Promise<str
     );
 
     if (response.ok) {
-        const data = await response.json() as { first_name: string; last_name: string };
+        const data = await response.json() as { firstname: string; lastname: string };
 
-        return [data.first_name, data.last_name];
+        return [data.firstname, data.lastname];
     }
 
     throw new Error("Failed to fetch user");
 }
 
+export async function getGroupsByLessonId(token:string, lesson_id:number, lesson_type_id?:number, lesson_arg?:number): Promise<number[]> {
+    const params = new URLSearchParams();
+    params.append("lesson_ids", lesson_id.toString());
+    
+    if (lesson_type_id !== undefined) {
+        params.append("lesson_type_ids", lesson_type_id.toString());
+    }
+    
+    if (lesson_arg !== undefined) {
+        params.append("lesson_args", lesson_arg.toString());
+    }
+
+    const response = await fetch(
+        `${ENV.api_url}/lesson/link/group?${params.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as number[] | { groups: number[] };
+
+        // Handle both formats: {groups: [...]} or just [...]
+        if (typeof data === "object" && "groups" in data) {
+            return data.groups;
+        }
+
+        return Array.isArray(data) ? data : [];
+    }
+
+    throw new Error("Failed to fetch groups for lesson");
+}
+
+export async function getGroupById(token:string, group_id:number): Promise<Group | null> {
+    const response = await fetch(
+        `${ENV.api_url}/group/id/${group_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as { id: number; parent_id: number | null; name: string; description: string };
+
+        return mapGroup(data);
+    }
+
+    throw new Error("Failed to fetch group");
+}
