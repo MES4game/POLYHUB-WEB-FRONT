@@ -1,44 +1,48 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemSeparator, ItemTitle } from "#/components/ui/item";
-import { Location } from "@/shared/models/common/location.model";
+import { Location, Building } from "@/shared/models/common/location.model";
 import { Button } from "#/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Label } from "@radix-ui/react-label";
+import { addRoom, addRoomNewBuilding, getAllBuildings, getAllRooms, deleteRoomById, updateRoom } from "@/api/admin.api";
+import { useGeneralVars } from "@/shared/contexts/common/general.context";
 
 const RoomsComp : FC = (): ReactNode => {
     const [rooms, setRooms] = useState<Location[]>([]);
+    const [buildings, setBuildings] = useState<Building[]>([]);
+    const { token } = useGeneralVars();
 
     const { register, handleSubmit, reset } = useForm<IFormInput>();
+    const { register: registerEdit, handleSubmit: handleEditSubmit, reset: resetEdit } = useForm<IEditFormInput>();
 
     useEffect(() => {
-        // toDo call API to init rooms
         console.log("Loaded: RoomsComp");
-        const rooms_test: Location[] = [
-            {
-                building   : "620",
-                room       : "B007",
-                description: "Toto",
-            },
-            {
-                building   : "640",
-                room       : "E103",
-                description: "Tata",
-            },
-        ];
-        setRooms(rooms_test);
+
+        getAllRooms(token.current).then(setRooms)
+            .catch(console.error);
+
+        getAllBuildings(token.current).then(setBuildings)
+            .catch(console.error);
     }, []);
 
     useEffect(() => {
         console.log("Rendered: RoomsComp");
     });
 
-    const deleteRoom = (index: number) => {
-        // toDo call API to delete room
-        rooms.splice(index, 1);
-        setRooms([...rooms]);
+    const deleteRoom = (id: number) => {
+        const index = rooms.findIndex((r) => { return r.id === id; });
+        
+        if (rooms[index] === undefined) return;
+
+        deleteRoomById(token.current, rooms[index].id).then(() => {
+            rooms.splice(index, 1);
+            setRooms([...rooms]);
+        })
+            .catch(console.error);
     };
 
     interface IFormInput {
@@ -46,27 +50,76 @@ const RoomsComp : FC = (): ReactNode => {
         building         : string;
         room             : string;
         description      : string;
+        capacity         : number;
+    }
+
+    interface IEditFormInput {
+        room       : string;
+        description: string;
+        capacity   : number;
     }
 
     const onSubmit: SubmitHandler<IFormInput> = (data) => {
-        // toDo call API to add room
-        const new_room: Location = {
-            building   : data.existing_building || data.building,
-            room       : data.room,
-            description: data.description,
-        };
+        if (data.existing_building === "" && data.building === "") {
+            alert("Veuillez sélectionner un bâtiment existant ou en ajouter un nouveau !");
 
-        for (const room of rooms) {
-            if (room.building === new_room.building && room.room === new_room.room) {
-                reset();
-                alert("La salle existe déjà !");
-
-                return;
-            }
+            return;
         }
 
-        reset();
-        setRooms([...rooms, new_room]);
+        let building_id = 0;
+
+        if (data.existing_building !== "") {
+            const building = buildings.find((b) => { return b.name === data.existing_building; });
+
+            building_id = building?.id ?? 0;
+
+            addRoom(token.current, building_id, data.room, data.description, data.capacity).then((new_room) => {
+                if (new_room) {
+                    reset();
+                    setRooms([...rooms, new_room]);
+                }
+            })
+                .catch(console.error);
+
+            return;
+        }
+        else {
+            addRoomNewBuilding(token.current, data.building, data.room, data.description, data.capacity).then((new_room) => {
+                if (new_room) {
+                    reset();
+                    setRooms([...rooms, new_room]);
+                }
+            })
+                .catch(console.error);
+
+            return;
+        }
+    };
+
+    const onEditSubmit = (data: IEditFormInput, id: number) => {
+        const index = rooms.findIndex((r) => { return r.id === id; });
+
+        if (rooms[index] === undefined) {
+            console.error("Room not found for editing");
+
+            return;
+        }
+
+        updateRoom(token.current, rooms[index].id, data.room, data.description, data.capacity).then(() => {
+            resetEdit();
+            if (!rooms[index]) return;
+            rooms[index].name = data.room;
+            rooms[index].description = data.description;
+            rooms[index].capacity = data.capacity;
+            setRooms([...rooms]);
+        })
+            .catch(console.error);
+    };
+
+    const getBuildingName = (building_id: number): string => {
+        const building = buildings.find((b) => { return b.id === building_id; });
+
+        return building ? building.name : "";
     };
 
     return (
@@ -93,10 +146,10 @@ const RoomsComp : FC = (): ReactNode => {
                                 <select {...register("existing_building")} className="p-2 border rounded">
                                     <option value="">-- Choisir un bâtiment --</option>
 
-                                    {Array.from(new Set(rooms.map((r) => { return r.building; }))).map((b) => {
+                                    {buildings.map((b) => {
                                         return (
-                                            <option value={b}>
-                                                {b}
+                                            <option value={b.name}>
+                                                {b.name}
                                             </option>
                                         );
                                     })}
@@ -108,7 +161,8 @@ const RoomsComp : FC = (): ReactNode => {
 
                             <Input type="text" {...register("building")} placeholder="Bâtiment" />
                             <Input type="text" {...register("room", { required: true })} placeholder="Salle" />
-                            <textarea {...register("description", { required: true })} placeholder="Description" />
+                            <textarea className="border rounded" {...register("description", { required: true })} placeholder="Description" />
+                            <Input type="number" {...register("capacity", { required: true })} placeholder="Capacité" />
 
                             <DialogClose asChild>
                                 <Button type="submit">Ajouter</Button>
@@ -124,22 +178,89 @@ const RoomsComp : FC = (): ReactNode => {
 
             <h1 className="ml-3 mt-3"><b>Gérer les salles</b></h1>
 
-            <ItemGroup className="gap-0 max-w-sm">
+            <ItemGroup className="gap-0 max-w-3xl mb-15">
                 {rooms.toSorted((a: Location, b: Location) => {
-                    return a.building < b.building ? -1 : a.building === b.building ? 0 : 1;
+                    return a.building_id < b.building_id ? -1 : a.building_id === b.building_id ? 0 : 1;
                 }).map((location: Location, index: number) => {
                     return (
                         <div key={index}>
                             <Item className="h-fit">
                                 <ItemContent>
-                                    <ItemTitle>Bâtiment : {location.building}</ItemTitle>
+                                    <ItemTitle>{getBuildingName(location.building_id)} - {location.name}</ItemTitle>
                                     
                                     <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
-                                        Salle : {location.room} <br /> {location.description}
+                                        {location.description} <br />Capacité : {location.capacity} personnes
                                     </ItemDescription>
                                 </ItemContent>
 
                                 <ItemActions>
+                                    <Dialog onOpenChange={(open) => {
+                                        if (open) {
+                                            // when opening the edit dialog, reset the edit form with the current room values
+                                            resetEdit({
+                                                room       : location.name,
+                                                description: location.description,
+                                                capacity   : location.capacity,
+                                            });
+                                        }
+                                    }}
+                                    >
+                                        <DialogTrigger asChild>
+                                            <Button>
+                                                <Edit />
+                                            </Button>
+                                        </DialogTrigger>
+
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Modifier la salle</DialogTitle>
+                                            </DialogHeader>
+
+                                            <div className="flex flex-col gap-4 mt-4">
+                                                <form onSubmit={(e) => { void handleEditSubmit((data) => { onEditSubmit(data, location.id); })(e); }}>
+
+                                                    <Label>Salle</Label>
+
+                                                    <Input
+                                                        type="text"
+                                                        {...registerEdit("room", { required: true })}
+                                                        defaultValue={location.name}
+                                                        placeholder="Salle"
+                                                    />
+
+                                                    <Label>Capacité</Label>
+
+                                                    <Input
+                                                        type="number"
+                                                        {...registerEdit("capacity", { required: true })}
+                                                        defaultValue={location.capacity}
+                                                        placeholder="Capacité"
+                                                    />
+
+                                                    <Label>Description</Label>
+                                                    <br />
+
+                                                    <textarea
+                                                        className="w-full border rounded"
+                                                        {...registerEdit("description", { required: true })}
+                                                        defaultValue={location.description}
+                                                        placeholder="Description"
+                                                    />
+
+                                                    <br />
+
+                                                    <DialogClose asChild>
+                                                        <Button type="submit">Enregistrer</Button>
+                                                    </DialogClose>
+
+                                                    <DialogClose asChild>
+                                                        <Button variant="outline">Annuler</Button>
+                                                    </DialogClose>
+                                                </form>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <Button>
@@ -155,7 +276,7 @@ const RoomsComp : FC = (): ReactNode => {
 
                                             <div className="flex flex-col gap-4 mt-4">
                                                 <DialogClose asChild>
-                                                    <Button variant="destructive" onClick={() => { deleteRoom(index); }}>Supprimer</Button>
+                                                    <Button variant="destructive" onClick={() => { deleteRoom(location.id); }}>Supprimer</Button>
                                                 </DialogClose>
 
                                                 <DialogClose asChild>

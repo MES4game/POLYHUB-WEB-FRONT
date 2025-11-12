@@ -1,0 +1,481 @@
+.month-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
+    scrollbar-gutter: stable;
+}
+
+
+.month-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-bottom: 2px solid #e5e7eb;
+    background-color: #f9fafb;
+    min-height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.month-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    text-transform: capitalize;
+}
+
+
+.month-view-calendar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    min-height: 0;
+}
+
+
+.weekdays-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.weekday-name {
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 0;
+}
+
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 8px;
+    flex: 1;
+    min-height: 0;
+}
+
+
+.month-day {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.month-day:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.month-day.other-month {
+    background-color: #f9fafb;
+    opacity: 0.6;
+}
+
+.month-day.today {
+    background-color: #fff7ed;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.1);
+}
+
+.month-day.selected {
+    background-color: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.month-day.today.selected {
+    background-color: #f5f3ff;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+}
+
+
+.day-date-number {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.month-day.today .day-date-number {
+    color: #ea580c;
+    background-color: #ea580c;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.month-day.selected .day-date-number {
+    color: #2563eb;
+}
+
+.month-day.today.selected .day-date-number {
+    background-color: #7c3aed;
+    color: white;
+}
+
+.month-day.other-month .day-date-number {
+    color: #9ca3af;
+}
+
+
+.day-events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+
+.month-event-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 28px;
+    overflow: hidden;
+}
+
+.month-event-card:hover {
+    opacity: 0.85;
+    transform: translateX(2px);
+}
+
+.month-event-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.month-event-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.month-event-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.month-event-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+
+.more-events-indicator {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.more-events-indicator:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+
+@media (max-width: 1024px) {
+    .month-title {
+        font-size: 1.375rem;
+    }
+
+    .month-view-calendar {
+        padding: 12px;
+    }
+
+    .month-grid {
+        gap: 6px;
+    }
+
+    .month-day {
+        padding: 6px;
+        min-height: 90px;
+    }
+
+    .day-date-number {
+        font-size: 1rem;
+    }
+
+    .month-day.today .day-date-number {
+        width: 28px;
+        height: 28px;
+    }
+
+    .month-event-card {
+        padding: 5px 6px;
+        min-height: 26px;
+    }
+
+    .month-event-title {
+        font-size: 0.75rem;
+    }
+
+    .month-event-time {
+        font-size: 0.6875rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .month-view-header {
+        padding: 12px;
+        min-height: 50px;
+    }
+
+    .month-title {
+        font-size: 1.25rem;
+    }
+
+    .month-view-calendar {
+        padding: 8px;
+    }
+
+    .weekday-name {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+
+    .month-grid {
+        gap: 4px;
+    }
+
+    .month-day {
+        padding: 4px;
+        min-height: 80px;
+        border-radius: 6px;
+    }
+
+    .day-date-number {
+        font-size: 0.9375rem;
+        margin-bottom: 6px;
+    }
+
+    .month-day.today .day-date-number {
+        width: 26px;
+        height: 26px;
+    }
+
+    .day-events-container {
+        gap: 3px;
+    }
+
+    .month-event-card {
+        padding: 4px 6px;
+        min-height: 24px;
+        gap: 4px;
+    }
+
+    .month-event-dot {
+        width: 6px;
+        height: 6px;
+    }
+
+    .month-event-title {
+        font-size: 0.6875rem;
+    }
+
+    .month-event-time {
+        font-size: 0.625rem;
+    }
+
+    .more-events-indicator {
+        font-size: 0.6875rem;
+        padding: 3px;
+    }
+}
+
+@media (max-width: 640px) {
+    .month-view-header {
+        padding: 10px;
+        min-height: 45px;
+    }
+
+    .month-title {
+        font-size: 1.125rem;
+    }
+
+    .weekday-name {
+        font-size: 0.625rem;
+        padding: 4px 0;
+    }
+
+    .month-day {
+        padding: 3px;
+        min-height: 70px;
+        border-radius: 4px;
+    }
+
+    .day-date-number {
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+    }
+
+    .month-day.today .day-date-number {
+        width: 24px;
+        height: 24px;
+    }
+
+    .month-event-card {
+        padding: 3px 4px;
+        min-height: 22px;
+        gap: 3px;
+    }
+
+    .month-event-dot {
+        width: 5px;
+        height: 5px;
+    }
+
+    .month-event-content {
+        gap: 4px;
+    }
+
+    .month-event-title {
+        font-size: 0.625rem;
+    }
+
+    .month-event-time {
+        display: none; 
+    }
+
+    .more-events-indicator {
+        font-size: 0.625rem;
+        padding: 2px;
+    }
+}
+
+@media (max-width: 480px) {
+    .month-view-calendar {
+        padding: 6px;
+    }
+
+    .weekdays-header {
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    .month-grid {
+        gap: 3px;
+    }
+
+    .month-day {
+        padding: 2px;
+        min-height: 60px;
+    }
+
+    .day-date-number {
+        font-size: 0.8125rem;
+        margin-bottom: 3px;
+    }
+
+    .month-day.today .day-date-number {
+        width: 22px;
+        height: 22px;
+    }
+
+    .day-events-container {
+        gap: 2px;
+    }
+
+    .month-event-card {
+        padding: 2px 3px;
+        min-height: 20px;
+        gap: 2px;
+    }
+
+    .month-event-dot {
+        width: 4px;
+        height: 4px;
+    }
+
+    .month-event-title {
+        font-size: 0.5625rem;
+    }
+
+    .more-events-indicator {
+        font-size: 0.5625rem;
+        padding: 2px;
+    }
+}
+
+
+.day-events-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.day-events-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.day-events-container::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+}
+
+.day-events-container::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+
+.month-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+.month-view::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.month-view::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.month-view::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

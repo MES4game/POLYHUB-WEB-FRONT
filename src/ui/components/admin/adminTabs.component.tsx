@@ -6,11 +6,10 @@ import {
     TabsTrigger,
 } from "#/components/ui/tabs";
 import UsersComp from "@/ui/components/admin/users.components";
-import AdminEDTComp from "@/ui/components/admin/edt.component";
+import AdminEDTComp from "@/ui/components/admin/edt/edt.component";
 import LessonsComp from "@/ui/components/admin/lessons.component";
 import GroupsComp from "@/ui/components/admin/groups.components";
 import RoomsComp from "@/ui/components/admin/rooms.component";
-import PersoAccountComp from "@/ui/components/admin/personalAccount.component";
 
 const AdminTabsComp : FC = (): ReactNode => {
     useEffect(() => {
@@ -30,7 +29,6 @@ const AdminTabsComp : FC = (): ReactNode => {
                     <TabsTrigger value="groupes">Groupes</TabsTrigger>
                     <TabsTrigger value="salles">Salles</TabsTrigger>
                     <TabsTrigger value="utilisateurs">Utilisateurs</TabsTrigger>
-                    <TabsTrigger value="perso">Mon compte</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="edt">
@@ -51,10 +49,6 @@ const AdminTabsComp : FC = (): ReactNode => {
 
                 <TabsContent value="utilisateurs">
                     <UsersComp />
-                </TabsContent>
-
-                <TabsContent value="perso">
-                    <PersoAccountComp />
                 </TabsContent>
             </Tabs>
         </div>

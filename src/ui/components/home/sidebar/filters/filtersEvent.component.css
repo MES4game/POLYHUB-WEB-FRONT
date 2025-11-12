@@ -1,0 +1,25 @@
+.event-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+}
+
+.event-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.event-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.event-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.event-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

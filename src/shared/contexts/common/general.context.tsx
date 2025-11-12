@@ -2,12 +2,14 @@ import { FC, ReactNode, createContext, useContext, useEffect } from "react";
 import { SmartRef } from "@/shared/models/common/hook.model";
 import { useSmartRef } from "@/shared/utils/common/hook.util";
 import { mapUser, User } from "@/shared/models/user.model";
-import { getSelf, getIsAdmin } from "@/api/user.api";
+import { getSelf, getSelfIsAdmin, getSelfIsModo } from "@/api/user.api";
 
 interface GeneralVarsType {
-    token   : SmartRef<string>;
-    user    : SmartRef<User>;
-    is_admin: SmartRef<boolean>;
+    token       : SmartRef<string>;
+    user        : SmartRef<User>;
+    is_admin    : SmartRef<boolean>;
+    is_modo     : SmartRef<boolean>;
+    selecteddate: SmartRef<Date | undefined>;
 }
 
 const GeneralVarsContext = createContext<GeneralVarsType | undefined>(undefined);
@@ -18,9 +20,11 @@ export interface GeneralVarsProviderProps {
 
 export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: GeneralVarsProviderProps): ReactNode => {
     const context_value: GeneralVarsType = {
-        token   : useSmartRef(""),
-        user    : useSmartRef(mapUser({})),
-        is_admin: useSmartRef(false),
+        token       : useSmartRef(""),
+        user        : useSmartRef(mapUser({})),
+        is_admin    : useSmartRef(false),
+        is_modo     : useSmartRef(false),
+        selecteddate: useSmartRef<Date | undefined>(new Date()),
     };
 
     useEffect(() => {
@@ -33,13 +37,19 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelf(curr)
                 .then((value) => { context_value.user.current = value; })
-                .catch(alert);
+                .catch(console.error);
         }, true));
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
-            getIsAdmin(curr)
+            getSelfIsAdmin(curr)
                 .then((value) => { context_value.is_admin.current = value; })
-                .catch(alert);
+                .catch(console.error);
+        }, true));
+
+        unsubscribers.push(context_value.token.subscribe((_, curr) => {
+            getSelfIsModo(curr)
+                .then((value) => { context_value.is_modo.current = value; })
+                .catch(console.error);
         }, true));
 
         context_value.token.current = sessionStorage.getItem("token") ?? "";

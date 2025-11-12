@@ -1,0 +1,793 @@
+import { ENV } from "@/shared/config/env.config";
+import { Group, mapGroup } from "@/shared/models/common/group.model";
+import { Lesson, LessonGroup, mapLessonGroup, mapLesson } from "@/shared/models/common/lesson.model";
+import { LessonType, mapLessonType } from "@/shared/models/common/lessonType.model";
+import { Building, Location, mapLocation, mapBuilding } from "@/shared/models/common/location.model";
+import { SubEvent, SubEventReturn } from "@/shared/models/event.model";
+
+export async function getAllGroups(token: string): Promise<Group[]> {
+    const response = await fetch(
+        `${ENV.api_url}/group/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((g: any) => { // eslint-disable-line
+            const group = { id: g.id, parentId: g.parent_id, name: g.name, description: g.description };  // eslint-disable-line
+            return mapGroup(group); }); // eslint-disable-line
+    }
+
+    return [];
+}
+
+export async function deleteGroupById(token: string, group_id: number): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/group/delete/${group_id.toString()}`,
+        {
+            method : "DELETE",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+}
+
+export async function addGroup(token: string, parent_id: number | null, name: string, description: string): Promise<Group | null> {
+    const response = await fetch(
+        `${ENV.api_url}/group/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                description: description,
+                name       : name,
+                parent_id  : parent_id,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+        const group = { id: data.id, parentId: data.parent_id, name: data.name, description: data.description };  // eslint-disable-line
+        return mapGroup(group); // eslint-disable-line
+    }
+    else {
+        const error = await response.json(); // eslint-disable-line
+
+        console.error(error);
+    }
+
+    return null;
+}
+
+export async function updateGroup(token: string, group_id: number, name: string, description: string): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/group/name`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_name: name,
+                group_id: group_id,
+            }),
+        },
+    );
+
+    await fetch(
+        `${ENV.api_url}/group/description`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_description: description,
+                group_id       : group_id,
+            }),
+        },
+    );
+
+    return;
+}
+
+export async function getAllRooms(token: string): Promise<Location[]> {
+    const response = await fetch(
+        `${ENV.api_url}/room/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((loc: any) => { // eslint-disable-line
+            return mapLocation(loc);
+        });
+    }
+
+    return [];
+}
+
+export async function getAllBuildings(token: string): Promise<Building[]> {
+    const response = await fetch(
+        `${ENV.api_url}/building/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((bld: any) => { // eslint-disable-line
+            return mapBuilding(bld);
+        });
+    }
+
+    return [];
+}
+
+export async function addRoom(token: string, building_id: number, room: string, description: string, capacity: number): Promise<Location | null> {
+    const response = await fetch(
+        `${ENV.api_url}/room/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                capacity   : capacity,
+                description: description,
+                name       : room,
+                building_id: building_id,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return mapLocation(data);
+    }
+
+    return null;
+}
+
+export async function addRoomNewBuilding(token: string, building_name: string, room: string, description: string, capacity: number): Promise<Location | null> { // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/building/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                description: "",
+                name       : building_name,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const buildingData = await response.json(); // eslint-disable-line
+
+        const building = mapBuilding(buildingData);
+
+        return addRoom(token, building.id, room, description, capacity);
+    }
+
+    return null;
+}
+
+export async function deleteRoomById(token: string, room_id: number): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/room/delete/${room_id.toString()}`,
+        {
+            method : "DELETE",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+}
+
+export async function updateRoom(token: string, room_id: number, name: string, description: string, capacity: number): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/room/name`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_name: name,
+                room_id : room_id,
+            }),
+        },
+    );
+    
+    await fetch(
+        `${ENV.api_url}/room/description`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_description: description,
+                room_id        : room_id,
+            }),
+        },
+    );
+
+    await fetch(
+        `${ENV.api_url}/room/capacity`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_capacity: capacity,
+                room_id     : room_id,
+            }),
+        },
+    );
+
+
+    return;
+}
+
+export async function getLessonType(_token:string): Promise<LessonType[]> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g"; // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/lesson_type/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((lt: any) => { // eslint-disable-line
+            const lessonType = { id: lt.id, name: lt.name, description: lt.description };  // eslint-disable-line
+            return mapLessonType(lessonType); }); // eslint-disable-line
+    }
+
+    return [];
+}
+
+export async function getLessonsByGroupId(_token:string, group_id:number): Promise<LessonGroup[]> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g"; // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/group/link/${group_id.toString()}/lesson`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((lt: any) => { // eslint-disable-line
+            const lessonGroup = { lesson_args: lt.lesson_args, lesson_type_id: lt.lesson_type_id, lesson_id: lt.lesson_id };  // eslint-disable-line
+            return mapLessonGroup(lessonGroup); }); // eslint-disable-line
+    }
+
+    return [];
+}
+
+export async function getLessons(token:string): Promise<Lesson[]> {
+    const response = await fetch(
+        `${ENV.api_url}/lesson/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((lt: any) => { // eslint-disable-line
+            const lesson = { id: lt.id, name: lt.name, description: lt.description, color: lt.color };  // eslint-disable-line
+            return mapLesson(lesson); }); // eslint-disable-line
+    }
+
+    return [];
+}
+
+export async function addLesson(token: string, name: string, description: string, color = "#3B82F6"): Promise<Lesson | null> {
+    const response = await fetch(
+        `${ENV.api_url}/lesson/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                name       : name,
+                description: description,
+                color      : color,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+        const lesson = { color: color, id: data.id, name: data.name, description: data.description };  // eslint-disable-line
+        return mapLesson(lesson); // eslint-disable-line
+    }
+    else {
+        const error = await response.json(); // eslint-disable-line
+
+        console.error(error);
+    }
+
+    return null;
+}
+
+export async function updateLesson(token: string, lesson_id: number, name: string, description: string): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/lesson/name`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_name : name,
+                lesson_id: lesson_id,
+            }),
+        },
+    );
+
+    await fetch(
+        `${ENV.api_url}/lesson/description`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_description: description,
+                lesson_id      : lesson_id,
+            }),
+        },
+    );
+
+    return;
+}
+
+export async function deleteLessonById(token: string, lesson_id: number): Promise<void> {
+    await fetch(
+        `${ENV.api_url}/lesson/delete/${lesson_id.toString()}`,
+        {
+            method : "DELETE",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+}
+
+// Post Event
+
+export async function setNewEvent(token: string, event: SubEvent): Promise<SubEventReturn> {
+    const response = await fetch(
+        `${ENV.api_url}/event/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                lesson_arg    : event.lesson_arg,
+                lesson_type_id: event.lesson_type_id,
+                lesson_id     : event.lesson_id,
+                end           : event.end.toISOString(),
+                start         : event.start.toISOString(),
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as {
+            id            : string;
+            start         : string;
+            end           : string;
+            lesson_id     : number;
+            lesson_type_id: number;
+            lesson_arg    : number;
+        };
+        
+        return {
+            id            : data.id,
+            start         : new Date(data.start),
+            end           : new Date(data.end),
+            lesson_id     : data.lesson_id,
+            lesson_type_id: data.lesson_type_id,
+            lesson_arg    : data.lesson_arg,
+        };
+    }
+
+    throw new Error("Failed to create event");
+}
+
+export async function linkLessonToGroup(token: string, lesson_id: number, lesson_group: LessonGroup): Promise<LessonGroup> {
+    const response = await fetch(
+        `${ENV.api_url}/group/link/${lesson_group.group_id.toString()}/lesson/${lesson_id.toString()}/${lesson_group.lesson_type_id.toString()}/${lesson_group.lesson_args.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        // Check if response has content before parsing
+        const content_type = response.headers.get("content-type");
+
+        if (content_type?.includes("application/json")) {
+            const data = await response.json() as {
+                lesson_args   : number;
+                lesson_type_id: number;
+                lesson_id     : number;
+            };
+            
+            return mapLessonGroup({
+                group_id      : lesson_group.group_id,
+                lesson_args   : data.lesson_args,
+                lesson_type_id: data.lesson_type_id,
+                lesson_id     : data.lesson_id,
+            });
+        }
+
+        // If no JSON response, return the input data
+        return lesson_group;
+    }
+
+    throw new Error("Failed to link lesson to group");
+}
+
+export async function linkRoomToEvent(token: string, event_id: number, room_id: number): Promise<void> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/room/${room_id.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                event_id,
+                room_id,
+            }),
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to link room to event");
+    }
+}
+
+export async function linkTeacherToEvent(token: string, event_id: number, teacher_id: number): Promise<void> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/user/${teacher_id.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to link teacher to event");
+    }
+}
+
+// Get Events
+
+export async function getAllEvents(token: string): Promise<SubEventReturn[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as {
+            id            : string;
+            start         : string;
+            end           : string;
+            lesson_id     : number;
+            lesson_type_id: number;
+            lesson_arg    : number;
+        }[];
+
+        // Convert date strings to Date objects
+        return data.map((event) => {
+            return {
+                id            : event.id,
+                start         : new Date(event.start),
+                end           : new Date(event.end),
+                lesson_id     : event.lesson_id,
+                lesson_type_id: event.lesson_type_id,
+                lesson_arg    : event.lesson_arg,
+            };
+        });
+    }
+
+    throw new Error("Failed to fetch events");
+}
+
+export async function getTeachersByEventId(token: string, event_id: number): Promise<number[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/user`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as { users: number[] } | number[];
+
+        // Handle both formats: {users: [...]} or just [...]
+        if (typeof data === "object" && "users" in data) {
+            return data.users;
+        }
+
+        return Array.isArray(data) ? data : [];
+    }
+
+    throw new Error("Failed to fetch teachers for event");
+}
+
+export async function getRoomsByEventId(token: string, event_id: number): Promise<number[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/room`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as { rooms: number[] } | number[];
+
+        if (typeof data === "object" && "rooms" in data) {
+            return data.rooms;
+        }
+
+        return Array.isArray(data) ? data : [];
+    }
+
+    throw new Error("Failed to fetch rooms for event");
+}
+
+export async function getLessonTypeById(token:string, lesson_type_id:number): Promise<LessonType | null> {
+    const response = await fetch(
+        `${ENV.api_url}/lesson_type/id/${lesson_type_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as LessonType;
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch lesson type");
+}
+
+export async function getLessonById(token:string, lesson_id:number): Promise<Lesson | null> {
+    const response = await fetch(
+        `${ENV.api_url}/lesson/id/${lesson_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as unknown;
+
+        return mapLesson(data);
+    }
+
+    throw new Error("Failed to fetch lesson");
+}
+
+export async function getRoomById(token:string, room_id:number): Promise<Location | null> {
+    const response = await fetch(
+        `${ENV.api_url}/room/id/${room_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as Location;
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch room");
+}
+
+export async function getBuildingById(token:string, building_id:number): Promise<Building | null> {
+    const response = await fetch(
+        `${ENV.api_url}/building/id/${building_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as Building;
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch building");
+}
+
+export async function getUserNameById(token:string, user_id:number): Promise<string[] | null> {
+    const response = await fetch(
+        `${ENV.api_url}/user/id/${user_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as { firstname: string; lastname: string };
+
+        return [data.firstname, data.lastname];
+    }
+
+    throw new Error("Failed to fetch user");
+}
+
+export async function getGroupsByLessonId(token:string, lesson_id:number, lesson_type_id?:number, lesson_arg?:number): Promise<number[]> {
+    const params = new URLSearchParams();
+    params.append("lesson_ids", lesson_id.toString());
+    
+    if (lesson_type_id !== undefined) {
+        params.append("lesson_type_ids", lesson_type_id.toString());
+    }
+    
+    if (lesson_arg !== undefined) {
+        params.append("lesson_args", lesson_arg.toString());
+    }
+
+    const response = await fetch(
+        `${ENV.api_url}/lesson/link/group?${params.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as number[] | { groups: number[] };
+
+        // Handle both formats: {groups: [...]} or just [...]
+        if (typeof data === "object" && "groups" in data) {
+            return data.groups;
+        }
+
+        return Array.isArray(data) ? data : [];
+    }
+
+    throw new Error("Failed to fetch groups for lesson");
+}
+
+export async function getGroupById(token:string, group_id:number): Promise<Group | null> {
+    const response = await fetch(
+        `${ENV.api_url}/group/id/${group_id.toString()}`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as { id: number; parent_id: number | null; name: string; description: string };
+
+        return mapGroup(data);
+    }
+
+    throw new Error("Failed to fetch group");
+}

@@ -13,14 +13,36 @@ import {
     FieldLabel,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+import { loginUser } from "@/api/user.api";
+import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import {
     FC,
     ReactNode,
     useEffect,
 } from "react";
 import { Link } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const LoginFormComp: FC = (): ReactNode => {
+    interface IFormInput {
+        login   : string;
+        password: string;
+    }
+
+    const context = useGeneralVars();
+    const { register, handleSubmit, reset: _reset } = useForm<IFormInput>();
+
+    const handleLogin: SubmitHandler<IFormInput> = async (data) => { // eslint-disable-line
+        loginUser(data.login, data.password).then((res) => {
+            context.token.current = res.token;
+            console.log("Login successful, token set.");
+            window.location.href = "/";
+        })
+            .catch((_error: unknown) => {
+                alert("Connexion échouée, vérifiez vos identifiants.");
+            });
+    };
+
     useEffect(() => {
         console.log("Loaded: LoginFormComp");
     }, []);
@@ -44,7 +66,7 @@ const LoginFormComp: FC = (): ReactNode => {
                 </CardHeader>
 
                 <CardContent>
-                    <form>
+                    <form onSubmit={(e) => { void handleSubmit(handleLogin)(e); }}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="pseudo">
@@ -52,6 +74,7 @@ const LoginFormComp: FC = (): ReactNode => {
                                 </FieldLabel>
 
                                 <Input
+                                    {...register("login")}
                                     id="pseudo"
                                     type="text"
                                     required
@@ -63,16 +86,10 @@ const LoginFormComp: FC = (): ReactNode => {
                                     <FieldLabel htmlFor="password">
                                         Mot de passe
                                     </FieldLabel>
-
-                                    <a
-                                        href="#"
-                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Mot de passe oublié?
-                                    </a>
                                 </div>
 
                                 <Input
+                                    {...register("password")}
                                     id="password"
                                     type="password"
                                     required

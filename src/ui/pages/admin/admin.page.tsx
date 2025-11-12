@@ -4,10 +4,11 @@ import AdminTabsComp from "@/ui/components/admin/adminTabs.component";
 import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import { useReRender } from "@/shared/utils/common/hook.util";
 import { Link } from "react-router-dom";
+import NavbarComp from "@/ui/components/home/navbar/navbar.component";
 
 
 const AdminPage: FC = (): ReactNode => {
-    const { is_admin } = useGeneralVars();
+    const { is_admin, is_modo } = useGeneralVars();
     const reRender = useReRender();
 
     useEffect(() => {
@@ -16,6 +17,7 @@ const AdminPage: FC = (): ReactNode => {
         const unsubscribers: (() => void)[] = [];
 
         unsubscribers.push(is_admin.subscribe(() => { reRender(); }));
+        unsubscribers.push(is_modo.subscribe(() => { reRender(); }));
 
         return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
@@ -26,7 +28,8 @@ const AdminPage: FC = (): ReactNode => {
 
     return (
         <div id="admin-page">
-            {is_admin.current ? <AdminTabsComp /> : <Link to="/">Page indisponible</Link>}
+            <NavbarComp />
+            {(is_admin.current || is_modo.current) ? <AdminTabsComp /> : <Link to="/">Page indisponible</Link>}
         </div>
     );
 };

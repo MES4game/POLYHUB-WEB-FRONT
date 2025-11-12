@@ -1,0 +1,29 @@
+.event-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+    scroll-behavior: smooth;
+}
+
+.event-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.event-container::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+}
+
+.event-container::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.event-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.6);
+}
+
+.event-container::-webkit-scrollbar-thumb:active {
+    background: rgba(71, 85, 105, 0.8);
+}
+
