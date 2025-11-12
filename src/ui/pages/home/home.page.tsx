@@ -4,6 +4,7 @@ import NavbarComp from "@/ui/components/home/navbar/navbar.component";
 import CalendarComp from "@/ui/components/home/calendar/calendar.component";
 import SidebarComp from "@/ui/components/home/sidebar/sidebar.component";
 import { CalendarFormat } from "@/ui/components/home/navbar/Format/formatButtons.component";
+import { FilterProvider } from "@/shared/contexts/common/filter.context";
 
 
 const HomePage: FC = (): ReactNode => {
@@ -18,15 +19,17 @@ const HomePage: FC = (): ReactNode => {
     });
 
     return (
-        <div id="home-page">
-            <NavbarComp
-                calendarformat={calendarformat}
-                onFormatChange={setCalendarFormat}
-            />
+        <FilterProvider>
+            <div id="home-page">
+                <NavbarComp
+                    calendarformat={calendarformat}
+                    onFormatChange={setCalendarFormat}
+                />
 
-            <SidebarComp />
-            <CalendarComp calendarformat={calendarformat} />
-        </div>
+                <SidebarComp />
+                <CalendarComp calendarformat={calendarformat} />
+            </div>
+        </FilterProvider>
     );
 };
 

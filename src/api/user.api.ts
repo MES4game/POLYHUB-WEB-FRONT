@@ -1,4 +1,5 @@
 import { User, mapUser } from "@/shared/models/user.model";
+import { Group, mapGroup } from "@/shared/models/common/group.model";
 import { ENV } from "@/shared/config/env.config";
 
 const USERS: User[] = [
@@ -252,4 +253,27 @@ export async function getAllTeachers(token: string): Promise<User[]> {
         .map(({ user }) => {
             return user;
         });
+}
+
+export async function getAllGroups(token: string): Promise<Group[]> {
+    const response = await fetch(
+        `${ENV.api_url}/group/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((g: any) => { // eslint-disable-line
+            const group = { id: g.id, parentId: g.parent_id, name: g.name, description: g.description };  // eslint-disable-line
+            return mapGroup(group); }); // eslint-disable-line
+    }
+
+    return [];
 }

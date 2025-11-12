@@ -80,19 +80,7 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const [is_calendar_open, setIsCalendarOpen] = useState(false);
     const [start_time, setStartTime] = useState("09:00");
     const [end_time, setEndTime] = useState("10:00");
-    const [selected_color, setSelectedColor] = useState("#3b82f6");
     const [is_submitting, setIsSubmitting] = useState(false);
-
-    const predefined_colors = [
-        "#3b82f6",
-        "#ef4444",
-        "#10b981",
-        "#f59e0b",
-        "#8b5cf6",
-        "#ec4899",
-        "#06b6d4",
-        "#f97316",
-    ];
 
     // Fetch rooms, buildings, promos, lesson types, and teachers from API
     useEffect(() => {
@@ -531,7 +519,10 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                 console.log("Linked to groups");
 
                 // Step 3: Link all selected rooms to the event
+                console.log("Linking rooms:", selected_locations, "to event:", created_event.id);
                 const room_promises = selected_locations.map(async (room_id) => {
+                    console.log(`Linking room ${room_id} to event ${created_event.id}`);
+
                     return linkRoomToEvent(token.current, parseInt(created_event.id, 10), parseInt(room_id, 10));
                 });
 
@@ -1256,43 +1247,6 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                             )}
                         </div>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label>Couleur de l'événement</Label>
-
-                        <div className="flex flex-wrap gap-2">
-                            {predefined_colors.map((color) => {
-                                return (
-                                    <button
-                                        key={color}
-                                        type="button"
-                                        onClick={() => { setSelectedColor(color); }}
-                                        className={cn(
-                                            "h-10 w-10 rounded-md transition-all hover:scale-110",
-                                            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                                            selected_color === color && "ring-2 ring-ring ring-offset-2 scale-110",
-                                        )}
-                                        style={{ backgroundColor: color }}
-                                        title={color}
-                                    >
-                                        {selected_color === color
-                                            && <Check className="h-5 w-5 mx-auto text-white drop-shadow-md" />}
-                                    </button>
-                                );
-                            })}
-
-                            <div className="relative">
-                                <input
-                                    type="color"
-                                    value={selected_color}
-                                    onChange={(e) => { setSelectedColor(e.target.value); }}
-                                    className="h-10 w-10 cursor-pointer rounded-md border border-input"
-                                    title="Choisir une couleur personnalisée"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
 
                     <DialogFooter className="pt-4 gap-3">
                         <DialogClose asChild>
