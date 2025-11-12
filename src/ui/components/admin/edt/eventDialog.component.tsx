@@ -80,19 +80,7 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const [is_calendar_open, setIsCalendarOpen] = useState(false);
     const [start_time, setStartTime] = useState("09:00");
     const [end_time, setEndTime] = useState("10:00");
-    const [selected_color, setSelectedColor] = useState("#3b82f6");
     const [is_submitting, setIsSubmitting] = useState(false);
-
-    const predefined_colors = [
-        "#3b82f6",
-        "#ef4444",
-        "#10b981",
-        "#f59e0b",
-        "#8b5cf6",
-        "#ec4899",
-        "#06b6d4",
-        "#f97316",
-    ];
 
     // Fetch rooms, buildings, promos, lesson types, and teachers from API
     useEffect(() => {
@@ -140,8 +128,8 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
 
                 setAllGroups(formatted_groups);
 
-                // Filter groups with parentId = -1 to get promos
-                const promo_groups = all_groups.filter((group) => { return group.parentId === -1; });
+                // Filter groups with parentId = 0 to get promos
+                const promo_groups = all_groups.filter((group) => { return group.parentId === 0; });
                 const formatted_promos = promo_groups.map((group) => {
                     return {
                         value: group.id.toString(),
@@ -531,7 +519,10 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                 console.log("Linked to groups");
 
                 // Step 3: Link all selected rooms to the event
+                console.log("Linking rooms:", selected_locations, "to event:", created_event.id);
                 const room_promises = selected_locations.map(async (room_id) => {
+                    console.log(`Linking room ${room_id} to event ${created_event.id}`);
+
                     return linkRoomToEvent(token.current, parseInt(created_event.id, 10), parseInt(room_id, 10));
                 });
 
@@ -1260,39 +1251,281 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                     <div className="space-y-2">
                         <Label>Couleur de l'événement</Label>
 
-                        <div className="flex flex-wrap gap-2">
-                            {predefined_colors.map((color) => {
-                                return (
-                                    <button
-                                        key={color}
-                                        type="button"
-                                        onClick={() => { setSelectedColor(color); }}
-                                        className={cn(
-                                            "h-10 w-10 rounded-md transition-all hover:scale-110",
-                                            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                                            selected_color === color && "ring-2 ring-ring ring-offset-2 scale-110",
-                                        )}
-                                        style={{ backgroundColor: color }}
-                                        title={color}
-                                    >
-                                        {selected_color === color
-                                            && <Check className="h-5 w-5 mx-auto text-white drop-shadow-md" />}
-                                    </button>
-                                );
-                            })}
+                        <div className="relative cour-select-container">
+                            <button
+                                type="button"
+                                onClick={() => { setIsCourOpen(!is_cour_open); }}
+                                className={cn(
+                                    "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md",
+                                    "border border-input bg-transparent px-3 py-2 text-sm shadow-sm",
+                                    "ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring",
+                                    "disabled:cursor-not-allowed disabled:opacity-50",
+                                )}
+                            >
+                                <span className={cn(
+                                    "line-clamp-1",
+                                    !selected_cour && "text-muted-foreground",
+                                )}
+                                >
+                                    {getCourDisplayText()}
+                                </span>
 
-                            <div className="relative">
-                                <input
-                                    type="color"
-                                    value={selected_color}
-                                    onChange={(e) => { setSelectedColor(e.target.value); }}
-                                    className="h-10 w-10 cursor-pointer rounded-md border border-input"
-                                    title="Choisir une couleur personnalisée"
-                                />
-                            </div>
+                                <svg
+                                    className="h-4 w-4 opacity-50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {is_cour_open && (
+                                <div
+                                    className={cn(
+                                        "absolute z-50 mt-1 w-full rounded-md border",
+                                        "bg-popover text-popover-foreground shadow-md",
+                                        "animate-in fade-in-0 zoom-in-95",
+                                    )}
+                                >
+                                    <div className="p-2 border-b">
+                                        <div className="relative">
+                                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+
+                                            <input
+                                                ref={cour_search_input_ref}
+                                                type="text"
+                                                value={cour_search_query}
+                                                onChange={(e) => { setCourSearchQuery(e.target.value); }}
+                                                placeholder="Rechercher un cours..."
+                                                className={cn(
+                                                    "w-full h-9 pl-8 pr-3 rounded-md border border-input",
+                                                    "bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring",
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-1 max-h-[300px] overflow-y-auto">
+                                        {filtered_cours.length === 0
+                                            ? (
+                                                <div className="py-6 text-center text-sm text-muted-foreground">
+                                                    Aucun cours trouvé
+                                                </div>
+                                            )
+                                            : filtered_cours.map((cour) => {
+                                                return (
+                                                    <div
+                                                        key={cour.value}
+                                                        onClick={() => { selectCour(cour.value); }}
+                                                        className={cn(
+                                                            "relative flex w-full cursor-pointer select-none items-center",
+                                                            "rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none",
+                                                            "hover:bg-accent hover:text-accent-foreground",
+                                                        )}
+                                                    >
+                                                        <span className="flex-1">{cour.label}</span>
+
+                                                        {selected_cour === cour.value && (
+                                                            <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                                                <Check className="h-4 w-4" />
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
+                    <div className="space-y-2">
+                        <Label htmlFor="event-description">Lieu</Label>
+
+                        <div className="relative location-select-container">
+                            <button
+                                type="button"
+                                onClick={() => { setIsLocationOpen(!is_location_open); }}
+                                className={cn(
+                                    "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md",
+                                    "border border-input bg-transparent px-3 py-2 text-sm shadow-sm",
+                                    "ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring",
+                                    "disabled:cursor-not-allowed disabled:opacity-50",
+                                )}
+                            >
+                                <span className={cn(
+                                    "line-clamp-1",
+                                    selected_locations.length === 0 && "text-muted-foreground",
+                                )}
+                                >
+                                    {getLocationsDisplayText()}
+                                </span>
+
+                                <svg
+                                    className="h-4 w-4 opacity-50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {is_location_open && (
+                                <div
+                                    className={cn(
+                                        "absolute z-50 mt-1 w-full rounded-md border",
+                                        "bg-popover text-popover-foreground shadow-md",
+                                        "animate-in fade-in-0 zoom-in-95",
+                                    )}
+                                >
+                                    <div className="p-2 border-b">
+                                        <div className="relative">
+                                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+
+                                            <input
+                                                ref={search_input_ref}
+                                                type="text"
+                                                value={search_query}
+                                                onChange={(e) => { setSearchQuery(e.target.value); }}
+                                                placeholder="Rechercher un lieu..."
+                                                className={cn(
+                                                    "w-full h-9 pl-8 pr-3 rounded-md border border-input",
+                                                    "bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring",
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-1 max-h-[300px] overflow-y-auto">
+                                        {filtered_locations.length === 0
+                                            ? (
+                                                <div className="py-6 text-center text-sm text-muted-foreground">
+                                                    Aucun lieu trouvé
+                                                </div>
+                                            )
+                                            : filtered_locations.map((location) => {
+                                                return (
+                                                    <div
+                                                        key={location.value}
+                                                        onClick={() => { toggleLocation(location.value); }}
+                                                        className={cn(
+                                                            "relative flex w-full cursor-pointer select-none items-center",
+                                                            "rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none",
+                                                            "hover:bg-accent hover:text-accent-foreground",
+                                                        )}
+                                                    >
+                                                        <span className="flex-1">{location.label}</span>
+
+                                                        {selected_locations.includes(location.value) && (
+                                                            <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                                                <Check className="h-4 w-4" />
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Professeur</Label>
+
+                        <div className="relative professor-select-container">
+                            <button
+                                type="button"
+                                onClick={() => { setIsProfessorOpen(!is_professor_open); }}
+                                className={cn(
+                                    "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md",
+                                    "border border-input bg-transparent px-3 py-2 text-sm shadow-sm",
+                                    "ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring",
+                                    "disabled:cursor-not-allowed disabled:opacity-50",
+                                )}
+                            >
+                                <span className={cn(
+                                    "line-clamp-1",
+                                    selected_professors.length === 0 && "text-muted-foreground",
+                                )}
+                                >
+                                    {getProfessorsDisplayText()}
+                                </span>
+
+                                <svg
+                                    className="h-4 w-4 opacity-50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {is_professor_open && (
+                                <div
+                                    className={cn(
+                                        "absolute z-50 mt-1 w-full rounded-md border",
+                                        "bg-popover text-popover-foreground shadow-md",
+                                        "animate-in fade-in-0 zoom-in-95",
+                                    )}
+                                >
+                                    <div className="p-2 border-b">
+                                        <div className="relative">
+                                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+
+                                            <input
+                                                ref={professor_search_input_ref}
+                                                type="text"
+                                                value={professor_search_query}
+                                                onChange={(e) => { setProfessorSearchQuery(e.target.value); }}
+                                                placeholder="Rechercher un professeur..."
+                                                className={cn(
+                                                    "w-full h-9 pl-8 pr-3 rounded-md border border-input",
+                                                    "bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring",
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-1 max-h-[300px] overflow-y-auto">
+                                        {filtered_professors.length === 0
+                                            ? (
+                                                <div className="py-6 text-center text-sm text-muted-foreground">
+                                                    Aucun professeur trouvé
+                                                </div>
+                                            )
+                                            : filtered_professors.map((professor) => {
+                                                return (
+                                                    <div
+                                                        key={professor.value}
+                                                        onClick={() => { toggleProfessor(professor.value); }}
+                                                        className={cn(
+                                                            "relative flex w-full cursor-pointer select-none items-center",
+                                                            "rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none",
+                                                            "hover:bg-accent hover:text-accent-foreground",
+                                                        )}
+                                                    >
+                                                        <span className="flex-1">{professor.label}</span>
+
+                                                        {selected_professors.includes(professor.value) && (
+                                                            <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                                                <Check className="h-4 w-4" />
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
 
                     <DialogFooter className="pt-4 gap-3">
                         <DialogClose asChild>

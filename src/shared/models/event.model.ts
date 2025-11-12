@@ -7,6 +7,7 @@ export interface EventModel {
     professor   : string[];
     category    : string;
     group       : string[];
+    group_ids   : number[];
     sub_group   : number;
     color       : EventColor;
     is_following: boolean;

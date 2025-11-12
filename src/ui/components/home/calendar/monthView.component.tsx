@@ -1,5 +1,5 @@
 import { FC, ReactNode, useMemo } from "react";
-import "@/ui/components/home/calendar/monthView.component.css";
+import "./monthView.component.css";
 import { EventModel, EVENT_COLOR_UTILS } from "@/shared/models/event.model";
 
 interface MonthViewProps {

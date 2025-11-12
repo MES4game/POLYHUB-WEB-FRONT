@@ -65,7 +65,7 @@ const GroupsComp : FC = (): ReactNode => {
     };
 
     const onSubmit: SubmitHandler<IFormInput> = async (data: IFormInput) => {
-        const group = await addGroup(token.current, 1, data.name, data.description);
+        const group = await addGroup(token.current, 0, data.name, data.description);
         if (!group) return;
         setGroups([...groups, group]);
         reset();
@@ -156,7 +156,7 @@ const GroupsComp : FC = (): ReactNode => {
                                         <ItemTitle>{group.id}. {group.name}</ItemTitle>
                                     
                                         <ItemDescription className="whitespace-pre-line break-words truncate-none line-clamp-none">
-                                        {group.parentId != -1 && `Sous-groupe de ${group.parentId}. ${getParentName(group.parentId)}\n` /* eslint-disable-line*/ }
+                                        {group.parentId !== 0 && `Sous-groupe de ${group.parentId}. ${getParentName(group.parentId)}\n` /* eslint-disable-line*/ }
                                             {group.description}
                                         </ItemDescription>
                                     </ItemContent>

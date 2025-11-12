@@ -5,12 +5,14 @@ export interface Lesson {
     id         : number;
     name       : string;
     description: string;
+    color      : string;
 }
 
 export const mapLesson = createMapper<Lesson>({
     id         : createConverter(unknownToNumber, 0),
     name       : createConverter(unknownToString, ""),
     description: createConverter(unknownToString, ""),
+    color      : createConverter(unknownToString, "blue"),
 });
 
 export interface LessonGroup {

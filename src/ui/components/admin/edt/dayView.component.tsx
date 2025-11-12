@@ -81,7 +81,7 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
         return date.toDateString() === currentdate.toDateString();
     };
 
-    const getEventPosition = (event: EventModel) => {
+    const getEventPosition = (event: EventModel, overlapping_events: EventModel[]) => {
         const start_time = new Date(event.start_time);
         const end_time = new Date(event.end_time);
         
@@ -91,7 +91,30 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
         const top = (((start_hour - 7) / 12) * 100).toString();
         const height = (((end_hour - start_hour) / 12) * 100).toString();
         
-        return { top: `${top}%`, height: `${height}%` };
+        // Calculate horizontal positioning for overlapping events
+        const total_overlapping = overlapping_events.length;
+        const event_index = overlapping_events.findIndex((e) => { return e.id === event.id; });
+        const width_percent = total_overlapping > 1 ? 100 / total_overlapping : 100;
+        const left_percent = total_overlapping > 1 ? (event_index * width_percent) : 0;
+        
+        return {
+            top   : `${top}%`,
+            height: `${height}%`,
+            width : `${width_percent.toString()}%`,
+            left  : `${left_percent.toString()}%`,
+        };
+    };
+
+    const getOverlappingEvents = (event: EventModel): EventModel[] => {
+        const event_start = new Date(event.start_time).getTime();
+        const event_end = new Date(event.end_time).getTime();
+        
+        return dayevents.filter((other_event) => {
+            const other_start = new Date(other_event.start_time).getTime();
+            const other_end = new Date(other_event.end_time).getTime();
+            
+            return event_start < other_end && event_end > other_start;
+        });
     };
 
     const formatEventTime = (date_string: string): string => {
@@ -133,7 +156,11 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
                         
                         <div className="events-container">
                             {dayevents.map((event: EventModel) => {
-                                const position = getEventPosition(event);
+                                const overlapping_events = getOverlappingEvents(event);
+                                const position = getEventPosition(event, overlapping_events);
+
+                                // Debug: Log event data
+                                console.log("Rendering event:", event.id, "Location:", event.location, "Location length:", event.location.length);
 
                                 return (
                                     <div
@@ -142,6 +169,8 @@ const DayViewComp: FC<DayViewProps> = ({ selecteddate, events = [] }): ReactNode
                                         style={{
                                             top   : position.top,
                                             height: position.height,
+                                            width : position.width,
+                                            left  : position.left,
                                         }}
                                     >
                                         <div className={`calendar-event-border ${EVENT_COLOR_UTILS.getCategoryColor(event.color)}`} />

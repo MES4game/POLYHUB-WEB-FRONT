@@ -61,28 +61,41 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
                         <ul>
                             {!token.current && (
                                 <>
-                                    <li><Link to="/login">Connexion</Link></li>
-                                    <li><Link to="/register">Inscription</Link></li>
-                                </>
-                            )}
-
-                            {token.current && (
-                                <>
-                                    {"Connecté(e) en tant que "}
-                                    {user.current.pseudo}
+                                    <li>
+                                        <Link to="/login">Connexion</Link>
+                                    </li>
 
                                     <li>
-                                        <Link
-                                            to="/login"
-                                            onClick={() => {
-                                                handleDisconnect();
-                                            }}
-                                        >
-                                            Se déconnecter
-                                        </Link>
+                                        <Link to="/register">Inscription</Link>
                                     </li>
                                 </>
                             )}
+
+                            {token.current
+                                && (
+                                    <>
+                                        {"Connecté(e) en tant que "}
+                                        {user.current.pseudo}
+
+                                        <li>
+                                            <Link
+                                                to="/login"
+                                                onClick={() => {
+                                                    handleDisconnect();
+                                                }}
+                                            >
+                                                Se déconnecter
+                                            </Link>
+                                        </li>
+
+                                        {(is_admin.current || is_modo.current)
+                                            && (
+                                                <li>
+                                                    <Link to="/admin">Page administrateur</Link>
+                                                </li>
+                                            )}
+                                    </>
+                                )}
                         </ul>
                     </nav>
                 </PopoverContent>
