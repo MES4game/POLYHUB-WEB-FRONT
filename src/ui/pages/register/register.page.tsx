@@ -11,16 +11,16 @@ const LoginPage: FC = (): ReactNode => {
     context.user.subscribe(reRender);
 
     useEffect(() => {
-        console.log("Loaded: HomePage");
+        console.log("Loaded: RegisterPage");
     }, []);
 
     useEffect(() => {
-        console.log("Rendered: HomePage");
+        console.log("Rendered: RegisterPage");
     });
 
     return (
-        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-            <div className="w-full max-w-sm">
+        <div className="flex min-h-fit items-center justify-center p-6 md:p-10">
+            <div className="min-w-sm">
                 <RegisterFormComp />
             </div>
         </div>
