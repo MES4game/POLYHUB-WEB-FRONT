@@ -57,7 +57,10 @@ Next steps define how to download the project and run it under a port/path, you 
     3. you also need to copy [`example.env`](./.docker/front/example.env) to `.env`
         - you can get it with `curl -o .env https://raw.githubusercontent.com/MES4game/POLYHUB-WEB-FRONT/main/.docker/front/example.env`
     4. edit `.env` to your needs
-    5. run `docker-compose up -d --force-recreate --pull always` to start the container
+    5. you also need to copy [`example.config.json`](./.docker/front/example.config.json) in the folder you mount for the volume used in container with the name `config.json`
+        - you can get it with `curl -o /path/to/mounted-front/config.json https://raw.githubusercontent.com/MES4game/POLYHUB-WEB-FRONT/main/.docker/front/example.config.json`
+    6. edit `config.json` to your needs
+    7. run `docker compose up -d --force-recreate` to start the container
 
 ---
 
