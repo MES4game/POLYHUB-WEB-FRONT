@@ -37,19 +37,19 @@ export const GeneralVarsProvider: FC<GeneralVarsProviderProps> = (props: General
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelf(curr)
                 .then((value) => { context_value.user.current = value; })
-                .catch(alert);
+                .catch(console.error);
         }, true));
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelfIsAdmin(curr)
                 .then((value) => { context_value.is_admin.current = value; })
-                .catch(alert);
+                .catch(console.error);
         }, true));
 
         unsubscribers.push(context_value.token.subscribe((_, curr) => {
             getSelfIsModo(curr)
                 .then((value) => { context_value.is_modo.current = value; })
-                .catch(alert);
+                .catch(console.error);
         }, true));
 
         context_value.token.current = sessionStorage.getItem("token") ?? "";

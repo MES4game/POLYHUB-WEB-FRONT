@@ -13,7 +13,7 @@ interface NavbarCompProps {
 }
 
 const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): ReactNode => {
-    const { token, is_admin, is_modo } = useGeneralVars();
+    const { token, is_admin, is_modo, user } = useGeneralVars();
     const reRender = useReRender();
 
     const handleDisconnect = (): void => {
@@ -29,6 +29,7 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
         unsubscribers.push(token.subscribe(() => { reRender(); }));
         unsubscribers.push(is_admin.subscribe(() => { reRender(); }));
         unsubscribers.push(is_modo.subscribe(() => { reRender(); }));
+        unsubscribers.push(user.subscribe(() => { reRender(); }));
 
         return () => { unsubscribers.forEach((fn) => { fn(); }); };
     }, []);
@@ -67,6 +68,9 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
 
                             {token.current && (
                                 <>
+                                    {"Connecté(e) en tant que "}
+                                    {user.current.pseudo}
+
                                     <li>
                                         <Link
                                             to="/login"
