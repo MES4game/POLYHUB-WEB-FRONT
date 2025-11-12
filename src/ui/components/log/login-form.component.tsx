@@ -13,6 +13,12 @@ import {
     FieldLabel,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
+
+/*
+ * import { loginUser } from "@/api/user.api";
+ * import { useGeneralVars } from "@/shared/contexts/common/general.context";
+ * import { error } from "console";
+ */
 import {
     FC,
     ReactNode,
@@ -21,6 +27,19 @@ import {
 import { Link } from "react-router-dom";
 
 const LoginFormComp: FC = (): ReactNode => {
+    /*
+     * const context = useGeneralVars();
+     *
+     * async function handleLogin(username: string, password: string) {
+     *     try {
+     *         context.token.current = (await loginUser(username, password)).token;
+     *     }
+     *     catch(error:unknown) {
+     *         alert(error);
+     *     }
+     * }
+     */
+
     useEffect(() => {
         console.log("Loaded: LoginFormComp");
     }, []);

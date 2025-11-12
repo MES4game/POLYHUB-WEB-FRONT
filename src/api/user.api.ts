@@ -156,3 +156,29 @@ export async function getAllUsers(_token: string): Promise<User[]> {
 
     return [];
 }
+
+export async function loginUser(user_login: string, password: string): Promise<{ token: string }> {
+    const response = await fetch(
+        `${ENV.api_url}/auth/login`,
+        {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                user_login: user_login,
+                password  : password,
+            }),
+        },
+    );
+
+    if (!response.ok) {
+        const error_data = await response.json() as { message?: string };
+
+        throw new Error(error_data.message ?? "Login failed");
+    }
+
+    const data = await response.json() as { token?: string };
+
+    return { token: data.token ?? "" };
+}
