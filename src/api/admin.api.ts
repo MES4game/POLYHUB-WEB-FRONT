@@ -3,6 +3,7 @@ import { Group, mapGroup } from "@/shared/models/common/group.model";
 import { Lesson, LessonGroup, mapLessonGroup, mapLesson } from "@/shared/models/common/lesson.model";
 import { LessonType, mapLessonType } from "@/shared/models/common/lessonType.model";
 import { Building, Location, mapLocation, mapBuilding } from "@/shared/models/common/location.model";
+import { SubEvent, SubEventReturn } from "@/shared/models/event.model";
 
 export async function getAllGroups(token: string): Promise<Group[]> {
     const response = await fetch(
@@ -361,4 +362,189 @@ export async function getLessons(_token:string): Promise<Lesson[]> {
     }
 
     return [];
+}
+
+// Post Event
+
+export async function setNewEvent(token: string, event: SubEvent): Promise<SubEventReturn> {
+    const response = await fetch(
+        `${ENV.api_url}/event/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                lesson_arg    : event.lesson_arg,
+                lesson_type_id: event.lesson_type_id,
+                lesson_id     : event.lesson_id,
+                end           : event.end.toISOString(),
+                start         : event.start.toISOString(),
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as {
+            id            : string;
+            start         : string;
+            end           : string;
+            lesson_id     : number;
+            lesson_type_id: number;
+            lesson_arg    : number;
+        };
+        
+        return {
+            id            : data.id,
+            start         : new Date(data.start),
+            end           : new Date(data.end),
+            lesson_id     : data.lesson_id,
+            lesson_type_id: data.lesson_type_id,
+            lesson_arg    : data.lesson_arg,
+        };
+    }
+
+    throw new Error("Failed to create event");
+}
+
+export async function linkLessonToGroup(token: string, lesson_id: number, lesson_group: LessonGroup): Promise<LessonGroup> {
+    const response = await fetch(
+        `${ENV.api_url}/group/link/${lesson_group.group_id.toString()}/lesson/${lesson_id.toString()}/${lesson_group.lesson_type_id.toString()}/${lesson_group.lesson_args.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        // Check if response has content before parsing
+        const content_type = response.headers.get("content-type");
+
+        if (content_type?.includes("application/json")) {
+            const data = await response.json() as {
+                lesson_args   : number;
+                lesson_type_id: number;
+                lesson_id     : number;
+            };
+            
+            return mapLessonGroup({
+                group_id      : lesson_group.group_id,
+                lesson_args   : data.lesson_args,
+                lesson_type_id: data.lesson_type_id,
+                lesson_id     : data.lesson_id,
+            });
+        }
+
+        // If no JSON response, return the input data
+        return lesson_group;
+    }
+
+    throw new Error("Failed to link lesson to group");
+}
+
+export async function linkRoomToEvent(token: string, event_id: number, room_id: number): Promise<void> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/room/${room_id.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                event_id,
+                room_id,
+            }),
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to link room to event");
+    }
+}
+
+export async function linkTeacherToEvent(token: string, group_id: number, teacher_id: number): Promise<void> {
+    const response = await fetch(
+        `${ENV.api_url}/group/link/${group_id.toString()}/user/${teacher_id.toString()}`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to link teacher to event");
+    }
+}
+
+// Get Events
+
+export async function getAllEvents(token: string): Promise<SubEventReturn[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as SubEventReturn[];
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch events");
+}
+
+export async function getTeachersByEventId(token: string, event_id: number): Promise<number[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/user`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as number[];
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch teachers for event");
+}
+
+export async function getRoomsByEventId(token: string, event_id: number): Promise<number[]> {
+    const response = await fetch(
+        `${ENV.api_url}/event/link/${event_id.toString()}/room`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json() as number[];
+
+        return data;
+    }
+
+    throw new Error("Failed to fetch rooms for event");
 }

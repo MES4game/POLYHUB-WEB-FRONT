@@ -14,7 +14,17 @@ import { Label } from "#/components/ui/label";
 import { Calendar } from "#/components/ui/calendar";
 import { Check, Search, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "#/lib/utils";
-import { getAllRooms, getAllBuildings, getAllGroups, getLessonType, getLessons } from "@/api/admin.api";
+import {
+    getAllRooms,
+    getAllBuildings,
+    getAllGroups,
+    getLessonType,
+    getLessons,
+    setNewEvent,
+    linkLessonToGroup,
+    linkRoomToEvent,
+    linkTeacherToEvent,
+} from "@/api/admin.api";
 import { getAllTeachers } from "@/api/user.api";
 import { Location } from "@/shared/models/common/location.model";
 import { Lesson } from "@/shared/models/common/lesson.model";
@@ -49,6 +59,7 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const [is_promo_open, setIsPromoOpen] = useState(false);
     const [selected_groups, setSelectedGroups] = useState<string[]>([]);
     const [is_group_open, setIsGroupOpen] = useState(false);
+    const [selected_sub_group, setSelectedSubGroup] = useState<number>(0);
     const [selected_category, setSelectedCategory] = useState<string>("");
     const [is_category_open, setIsCategoryOpen] = useState(false);
     const [selected_cour, setSelectedCour] = useState<string>("");
@@ -70,6 +81,7 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const [start_time, setStartTime] = useState("09:00");
     const [end_time, setEndTime] = useState("10:00");
     const [selected_color, setSelectedColor] = useState("#3b82f6");
+    const [is_submitting, setIsSubmitting] = useState(false);
 
     const predefined_colors = [
         "#3b82f6",
@@ -471,21 +483,81 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Validation
+        if (!selected_date || !selected_cour || !selected_category || selected_groups.length === 0) {
+            console.error("Missing required fields");
 
-        // TODO: Handle form submission with all data
-        console.log({
-            locations : selected_locations,
-            professors: selected_professors,
-            promo     : selected_promo,
-            groups    : selected_groups,
-            category  : selected_category,
-            date      : selected_date,
-            start_time,
-            end_time,
-            color     : selected_color,
-        });
+            return;
+        }
 
-        onClose();
+        setIsSubmitting(true);
+
+        // Execute async operation
+        void (async () => {
+            try {
+                // Combine date and time into ISO strings
+                const start_date = new Date(selected_date);
+                const [start_hours, start_minutes] = start_time.split(":").map(Number);
+
+                start_date.setHours(start_hours ?? 0, start_minutes ?? 0, 0, 0);
+
+                const end_date = new Date(selected_date);
+                const [end_hours, end_minutes] = end_time.split(":").map(Number);
+
+                end_date.setHours(end_hours ?? 0, end_minutes ?? 0, 0, 0);
+
+                // Step 1: Create the event
+                const created_event = await setNewEvent(token.current, {
+                    lesson_arg    : selected_sub_group,
+                    lesson_type_id: parseInt(selected_category, 10),
+                    lesson_id     : parseInt(selected_cour, 10),
+                    start         : start_date,
+                    end           : end_date,
+                });
+
+                console.log("Event created:", created_event);
+
+                // Step 2: Link lesson to all selected groups
+                const group_promises = selected_groups.map(async (group_id) => {
+                    return linkLessonToGroup(token.current, parseInt(selected_cour, 10), {
+                        group_id      : parseInt(group_id, 10),
+                        lesson_args   : selected_sub_group,
+                        lesson_type_id: parseInt(selected_category, 10),
+                        lesson_id     : parseInt(selected_cour, 10),
+                    });
+                });
+
+                await Promise.all(group_promises);
+                console.log("Linked to groups");
+
+                // Step 3: Link all selected rooms to the event
+                const room_promises = selected_locations.map(async (room_id) => {
+                    return linkRoomToEvent(token.current, parseInt(created_event.id, 10), parseInt(room_id, 10));
+                });
+
+                await Promise.all(room_promises);
+                console.log("Linked to rooms");
+
+                // Step 4: Link all selected teachers to the event
+                const teacher_promises = selected_professors.map(async (teacher_id) => {
+                    return linkTeacherToEvent(token.current, parseInt(created_event.id, 10), parseInt(teacher_id, 10));
+                });
+
+                await Promise.all(teacher_promises);
+                console.log("Linked to teachers");
+
+                console.log("Event created successfully!");
+                onClose();
+            }
+            catch(error) {
+                console.error("Error creating event:", error);
+
+                // TODO: Show error message to user
+            }
+            finally {
+                setIsSubmitting(false);
+            }
+        })();
     };
 
     return (
@@ -759,6 +831,57 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Sous Groupe</Label>
+
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => { setSelectedSubGroup(0); }}
+                                className={cn(
+                                    "flex-1 h-9 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                    "border border-input",
+                                    "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                    selected_sub_group === 0
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-transparent hover:bg-accent hover:text-accent-foreground",
+                                )}
+                            >
+                                Classe entière
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => { setSelectedSubGroup(1); }}
+                                className={cn(
+                                    "flex-1 h-9 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                    "border border-input",
+                                    "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                    selected_sub_group === 1
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-transparent hover:bg-accent hover:text-accent-foreground",
+                                )}
+                            >
+                                Groupe A
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => { setSelectedSubGroup(2); }}
+                                className={cn(
+                                    "flex-1 h-9 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                    "border border-input",
+                                    "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                    selected_sub_group === 2
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-transparent hover:bg-accent hover:text-accent-foreground",
+                                )}
+                            >
+                                Groupe B
+                            </button>
                         </div>
                     </div>
 
@@ -1173,13 +1296,13 @@ export const EventDialogComp: FC<EventDialogProps> = ({ isopen, onClose }): Reac
 
                     <DialogFooter className="pt-4 gap-3">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" className="w-full sm:w-auto">
+                            <Button type="button" variant="outline" className="w-full sm:w-auto" disabled={is_submitting}>
                                 Annuler
                             </Button>
                         </DialogClose>
 
-                        <Button type="submit" className="w-full sm:w-auto">
-                            Valider
+                        <Button type="submit" className="w-full sm:w-auto" disabled={is_submitting}>
+                            {is_submitting ? "Création en cours..." : "Valider"}
                         </Button>
                     </DialogFooter>
                 </form>

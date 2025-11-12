@@ -77,9 +77,6 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
                                             Se déconnecter
                                         </Link>
                                     </li>
-
-                                    {(is_admin.current || is_modo.current)
-                                        && <li><Link to="/admin">Page administrateur</Link></li>}
                                 </>
                             )}
                         </ul>

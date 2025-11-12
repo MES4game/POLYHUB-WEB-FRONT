@@ -7,9 +7,28 @@ export interface EventModel {
     professor   : string[];
     category    : string;
     group       : string[];
+    sub_group   : number;
     color       : EventColor;
     is_following: boolean;
 }
+
+export interface SubEvent {
+    lesson_arg    : number;
+    lesson_type_id: number;
+    lesson_id     : number;
+    end           : Date;
+    start         : Date;
+}
+
+export interface SubEventReturn {
+    id            : string;
+    start         : Date;
+    end           : Date;
+    lesson_id     : number;
+    lesson_type_id: number;
+    lesson_arg    : number;
+}
+
 
 export type EventColor = "blue" | "orange" | "green" | "purple" | "red" | "yellow";
 
