@@ -5,8 +5,8 @@ import { Avatar, AvatarImage } from "#/components/ui/avatar";
 import FormatButtonsComp, { CalendarFormat } from "@/ui/components/home/navbar/Format/formatButtons.component";
 
 interface NavbarCompProps {
-    calendarformat: CalendarFormat;
-    onFormatChange: (format: CalendarFormat) => void;
+    calendarformat?: CalendarFormat;
+    onFormatChange?: (format: CalendarFormat) => void;
 }
 
 const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): ReactNode => {
@@ -20,13 +20,15 @@ const NavbarComp: FC<NavbarCompProps> = ({ calendarformat, onFormatChange }): Re
 
     return (
         <header id="navbar">
-            <Link to="/">PolyHUB</Link>
+            <Link to="/"><b>PolyHUB</b></Link>
             
-            <FormatButtonsComp
-                value={calendarformat}
-                onValueChange={onFormatChange}
-            />
-            
+            {calendarformat && onFormatChange && (
+                <FormatButtonsComp
+                    value={calendarformat}
+                    onValueChange={onFormatChange}
+                />
+            )}
+
             <Link to="/login">
                 <Avatar>
                     <AvatarImage src="/images/loginImage.png" />
