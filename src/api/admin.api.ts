@@ -1,5 +1,6 @@
 import { ENV } from "@/shared/config/env.config";
 import { Group, mapGroup } from "@/shared/models/common/group.model";
+import { Building, Location, mapLocation, mapBuilding } from "@/shared/models/common/location.model";
 
 export async function getAllGroups(_token: string): Promise<Group[]> {
     const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
@@ -104,6 +105,177 @@ export async function updateGroup(_token: string, group_id: number, name: string
             }),
         },
     );
+
+    return;
+}
+
+export async function getAllRooms(_token: string): Promise<Location[]> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/room/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((loc: any) => { // eslint-disable-line
+            return mapLocation(loc);
+        });
+    }
+
+    return [];
+}
+
+export async function getAllBuildings(_token: string): Promise<Building[]> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/building/all`,
+        {
+            method : "GET",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return data.map((bld: any) => { // eslint-disable-line
+            return mapBuilding(bld);
+        });
+    }
+
+    return [];
+}
+
+export async function addRoom(_token: string, building_id: number, room: string, description: string, capacity: number): Promise<Location | null> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/room/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                capacity   : capacity,
+                description: description,
+                name       : room,
+                building_id: building_id,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const data = await response.json(); // eslint-disable-line
+
+        return mapLocation(data);
+    }
+
+    return null;
+}
+
+export async function addRoomNewBuilding(_token: string, building_name: string, room: string, description: string, capacity: number): Promise<Location | null> { // eslint-disable-line
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    const response = await fetch(
+        `${ENV.api_url}/building/create`,
+        {
+            method : "POST",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                description: "",
+                name       : building_name,
+            }),
+        },
+    );
+
+    if (response.ok) {
+        const buildingData = await response.json(); // eslint-disable-line
+
+        const building = mapBuilding(buildingData);
+
+        return addRoom(_token, building.id, room, description, capacity);
+    }
+
+    return null;
+}
+
+export async function deleteRoomById(_token: string, room_id: number): Promise<void> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    
+    await fetch(
+        `${ENV.api_url}/room/delete/${room_id.toString()}`,
+        {
+            method : "DELETE",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+        },
+    );
+}
+
+export async function updateRoom(_token: string, room_id: number, name: string, description: string, capacity: number): Promise<void> {
+    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+    
+    await fetch(
+        `${ENV.api_url}/room/name`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_name: name,
+                room_id : room_id,
+            }),
+        },
+    );
+    
+    await fetch(
+        `${ENV.api_url}/room/description`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_description: description,
+                room_id        : room_id,
+            }),
+        },
+    );
+
+    await fetch(
+        `${ENV.api_url}/room/capacity`,
+        {
+            method : "PATCH",
+            headers: {
+                Authorization : `Bearer ${token}`, // eslint-disable-line
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                new_capacity: capacity,
+                room_id     : room_id,
+            }),
+        },
+    );
+
 
     return;
 }
