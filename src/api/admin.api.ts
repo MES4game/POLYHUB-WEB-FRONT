@@ -2,8 +2,7 @@ import { ENV } from "@/shared/config/env.config";
 import { Group, mapGroup } from "@/shared/models/common/group.model";
 import { Building, Location, mapLocation, mapBuilding } from "@/shared/models/common/location.model";
 
-export async function getAllGroups(_token: string): Promise<Group[]> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function getAllGroups(token: string): Promise<Group[]> {
     const response = await fetch(
         `${ENV.api_url}/group/all`,
         {
@@ -26,9 +25,7 @@ export async function getAllGroups(_token: string): Promise<Group[]> {
     return [];
 }
 
-export async function deleteGroupById(_token: string, group_id: number): Promise<void> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
-    
+export async function deleteGroupById(token: string, group_id: number): Promise<void> {
     await fetch(
         `${ENV.api_url}/group/delete/${group_id.toString()}`,
         {
@@ -41,8 +38,7 @@ export async function deleteGroupById(_token: string, group_id: number): Promise
     );
 }
 
-export async function addGroup(_token: string, parent_id: number | null, name: string, description: string): Promise<Group | null> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function addGroup(token: string, parent_id: number | null, name: string, description: string): Promise<Group | null> {
     const response = await fetch(
         `${ENV.api_url}/group/create`,
         {
@@ -73,9 +69,7 @@ export async function addGroup(_token: string, parent_id: number | null, name: s
     return null;
 }
 
-export async function updateGroup(_token: string, group_id: number, name: string, description: string): Promise<void> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
-    
+export async function updateGroup(token: string, group_id: number, name: string, description: string): Promise<void> {
     await fetch(
         `${ENV.api_url}/group/name`,
         {
@@ -109,8 +103,7 @@ export async function updateGroup(_token: string, group_id: number, name: string
     return;
 }
 
-export async function getAllRooms(_token: string): Promise<Location[]> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function getAllRooms(token: string): Promise<Location[]> {
     const response = await fetch(
         `${ENV.api_url}/room/all`,
         {
@@ -133,8 +126,7 @@ export async function getAllRooms(_token: string): Promise<Location[]> {
     return [];
 }
 
-export async function getAllBuildings(_token: string): Promise<Building[]> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function getAllBuildings(token: string): Promise<Building[]> {
     const response = await fetch(
         `${ENV.api_url}/building/all`,
         {
@@ -157,8 +149,7 @@ export async function getAllBuildings(_token: string): Promise<Building[]> {
     return [];
 }
 
-export async function addRoom(_token: string, building_id: number, room: string, description: string, capacity: number): Promise<Location | null> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function addRoom(token: string, building_id: number, room: string, description: string, capacity: number): Promise<Location | null> {
     const response = await fetch(
         `${ENV.api_url}/room/create`,
         {
@@ -185,8 +176,7 @@ export async function addRoom(_token: string, building_id: number, room: string,
     return null;
 }
 
-export async function addRoomNewBuilding(_token: string, building_name: string, room: string, description: string, capacity: number): Promise<Location | null> { // eslint-disable-line
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
+export async function addRoomNewBuilding(token: string, building_name: string, room: string, description: string, capacity: number): Promise<Location | null> { // eslint-disable-line
     const response = await fetch(
         `${ENV.api_url}/building/create`,
         {
@@ -207,15 +197,13 @@ export async function addRoomNewBuilding(_token: string, building_name: string, 
 
         const building = mapBuilding(buildingData);
 
-        return addRoom(_token, building.id, room, description, capacity);
+        return addRoom(token, building.id, room, description, capacity);
     }
 
     return null;
 }
 
-export async function deleteRoomById(_token: string, room_id: number): Promise<void> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
-    
+export async function deleteRoomById(token: string, room_id: number): Promise<void> {
     await fetch(
         `${ENV.api_url}/room/delete/${room_id.toString()}`,
         {
@@ -228,9 +216,7 @@ export async function deleteRoomById(_token: string, room_id: number): Promise<v
     );
 }
 
-export async function updateRoom(_token: string, room_id: number, name: string, description: string, capacity: number): Promise<void> {
-    const token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYyODk4OTY5LCJleHAiOjE3NjI5MjA1NjksImF1ZCI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsImlzcyI6ImFwaS5wb2x5aHViLm1lczRnYW1lLmNvbSIsInN1YiI6IjEifQ.hUuActDWjS8rWCP-TwcJXxGLWk5YO0gxrw1gyra1v6esETqKHdzMmfosITr1mbUT8ouhHHQuSFbP33P3ZYsz2g";  // eslint-disable-line
-    
+export async function updateRoom(token: string, room_id: number, name: string, description: string, capacity: number): Promise<void> {
     await fetch(
         `${ENV.api_url}/room/name`,
         {
