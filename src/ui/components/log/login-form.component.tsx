@@ -85,13 +85,6 @@ const LoginFormComp: FC = (): ReactNode => {
                                     <FieldLabel htmlFor="password">
                                         Mot de passe
                                     </FieldLabel>
-
-                                    <a
-                                        href="#"
-                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Mot de passe oublié?
-                                    </a>
                                 </div>
 
                                 <Input
