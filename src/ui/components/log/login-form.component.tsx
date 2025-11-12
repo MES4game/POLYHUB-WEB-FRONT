@@ -13,32 +13,34 @@ import {
     FieldLabel,
 } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
-
-/*
- * import { loginUser } from "@/api/user.api";
- * import { useGeneralVars } from "@/shared/contexts/common/general.context";
- * import { error } from "console";
- */
+import { loginUser } from "@/api/user.api";
+import { useGeneralVars } from "@/shared/contexts/common/general.context";
 import {
     FC,
     ReactNode,
     useEffect,
 } from "react";
 import { Link } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const LoginFormComp: FC = (): ReactNode => {
-    /*
-     * const context = useGeneralVars();
-     *
-     * async function handleLogin(username: string, password: string) {
-     *     try {
-     *         context.token.current = (await loginUser(username, password)).token;
-     *     }
-     *     catch(error:unknown) {
-     *         alert(error);
-     *     }
-     * }
-     */
+    interface IFormInput {
+        login   : string;
+        password: string;
+    }
+
+    const context = useGeneralVars();
+    const { register, handleSubmit, reset: _reset } = useForm<IFormInput>();
+
+    const handleLogin: SubmitHandler<IFormInput> = async (data) => {
+        try {
+            context.token.current = (await loginUser(data.login, data.password)).token;
+            window.location.href = "/";
+        }
+        catch(_error:unknown) {
+            alert("Connexion échouée. Veuillez vérifier vos identifiants.");
+        }
+    };
 
     useEffect(() => {
         console.log("Loaded: LoginFormComp");
@@ -63,7 +65,7 @@ const LoginFormComp: FC = (): ReactNode => {
                 </CardHeader>
 
                 <CardContent>
-                    <form>
+                    <form onSubmit={(e) => { void handleSubmit(handleLogin)(e); }}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="pseudo">
@@ -71,6 +73,7 @@ const LoginFormComp: FC = (): ReactNode => {
                                 </FieldLabel>
 
                                 <Input
+                                    {...register("login")}
                                     id="pseudo"
                                     type="text"
                                     required
@@ -92,6 +95,7 @@ const LoginFormComp: FC = (): ReactNode => {
                                 </div>
 
                                 <Input
+                                    {...register("password")}
                                     id="password"
                                     type="password"
                                     required

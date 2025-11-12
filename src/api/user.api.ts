@@ -182,3 +182,30 @@ export async function loginUser(user_login: string, password: string): Promise<{
 
     return { token: data.token ?? "" };
 }
+
+export async function registerUser(pseudo: string, email: string, firstname: string, lastname: string, password: string): Promise<void> {
+    const response = await fetch(
+        `${ENV.api_url}/auth/register`,
+        {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json", // eslint-disable-line
+            },
+            body: JSON.stringify({
+                pseudo   : pseudo,
+                email    : email,
+                firstname: firstname,
+                lastname : lastname,
+                password : password,
+            }),
+        },
+    );
+    
+    if (!response.ok) {
+        const error_data = await response.json() as { message?: string };
+
+        throw new Error(error_data.message ?? "Registration failed");
+    }
+
+    return;
+}
