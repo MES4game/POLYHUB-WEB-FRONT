@@ -1,6 +1,5 @@
 import { User, mapUser } from "@/shared/models/user.model";
 import { ENV } from "@/shared/config/env.config";
-import { error } from "console";
 
 const USERS: User[] = [
     { id: 1, pseudo: "", email: "", firstname: "", lastname: "", created_on: new Date(), last_connection: new Date(), deleted_on: new Date(0), verified_email: false }, // eslint-disable-line
@@ -174,8 +173,12 @@ export async function loginUser(user_login: string, password: string): Promise<{
     );
 
     if (!response.ok) {
-        throw new Error((await response.json()).message);
+        const error_data = await response.json() as { message?: string };
+
+        throw new Error(error_data.message ?? "Login failed");
     }
 
-    return { token: (await response.json()).token ?? "" };
+    const data = await response.json() as { token?: string };
+
+    return { token: data.token ?? "" };
 }
