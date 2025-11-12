@@ -233,3 +233,23 @@ export async function registerUser(pseudo: string, email: string, firstname: str
 
     return;
 }
+
+export async function getAllTeachers(token: string): Promise<User[]> {
+    const all_users = await getAllUsers(token);
+    
+    const teachers = await Promise.all(
+        all_users.map(async (user) => {
+            const is_teacher = await getIsTeacher(token, user.id);
+
+            return { user, is_teacher };
+        }),
+    );
+    
+    return teachers
+        .filter(({ is_teacher }) => {
+            return is_teacher;
+        })
+        .map(({ user }) => {
+            return user;
+        });
+}
